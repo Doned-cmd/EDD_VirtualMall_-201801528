@@ -23,19 +23,31 @@ type DepartamentoMatriz struct {
 }
 type Calificacion struct {
 	Calificacion int
-	Lista ListaDobleEnlazada.ListaDoble
+	Lista *ListaDobleEnlazada.ListaDoble
 }
 
 
+//Arreglo Linealizado
+
+type ArregloLinea struct {
+	IndiceNOmbre string
+	Departamento string
+	Calificacion int
+
+	Lista *ListaDobleEnlazada.ListaDoble
+}
 
 
 var matricita []Indice
 
 func main() {
 
-//	matricita = append(matricita, )
-	fmt.Print()
-	request()
+  	if "hola"<"i"{
+  		println("b es mayor")
+	}
+
+	//fmt.Print()
+	//request()
 
 }
 

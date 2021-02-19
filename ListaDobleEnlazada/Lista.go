@@ -14,8 +14,8 @@ type ListaDoble struct {
 	size int
 }
 
-func NewListaDoble() ListaDoble {
-	return ListaDoble{head: nil, last: nil, size: -1}
+func NewListaDoble() *ListaDoble {
+	return &ListaDoble{head: nil, last: nil, size: -1}
 }
 //saber si esta vacio
 func (d *ListaDoble) IsEmpty() bool{
