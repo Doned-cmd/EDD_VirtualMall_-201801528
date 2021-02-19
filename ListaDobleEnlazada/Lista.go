@@ -133,3 +133,13 @@ func (d *ListaDoble) ImprimirLista() {
 	}
 
 }
+
+func (d *ListaDoble) ReturnNodes() []Json.Tienda {
+	var ArregloTiendas []Json.Tienda
+	aux := d.head
+	for aux != nil{
+		ArregloTiendas = append(ArregloTiendas, aux.dato)
+		aux = aux.next
+	}
+	return ArregloTiendas
+}

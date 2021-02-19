@@ -30,25 +30,36 @@ type Calificacion struct {
 //Arreglo Linealizado
 
 type ArregloLinea struct {
-	IndiceNOmbre string
+	IndiceNombre string
 	Departamento string
 	Calificacion int
 
 	Lista *ListaDobleEnlazada.ListaDoble
 }
 
-
+//Arreglos de datos
 var matricita []Indice
+var ArregloCali []ArregloLinea
+
 
 func main() {
 
-  	if "hola"<"i"{
-  		println("b es mayor")
-	}
+
 
 	//fmt.Print()
 	//request()
 
+}
+
+func request(){
+	myrouter := mux.NewRouter().StrictSlash(true)
+	myrouter.HandleFunc("/", homePage)
+	myrouter.HandleFunc("/getArreglo",getArreglo).Methods("GET")
+	myrouter.HandleFunc("/cargartienda", cargartienda).Methods("POST")
+	myrouter.HandleFunc("/TiendaEspecifica", TiendaEspecifica).Methods("POST")
+	myrouter.HandleFunc("/Eliminar", Eliminar).Methods("DELETE")
+	myrouter.HandleFunc("/Guardar", Guardar).Methods("POST")
+	log.Fatal(http.ListenAndServe(":3000", myrouter))
 }
 
 
@@ -57,32 +68,21 @@ func main() {
 func homePage(w http.ResponseWriter, r *http.Request){
 	fmt.Fprintf(w,"Servidor en Go")
 }
-
+//REGRESAR GRAFICO DE COMO ESTA LA MEMORIA
 func getArreglo(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprintf(w, "[1,2,3,4]")
 }
 
-func metodopost(w http.ResponseWriter, r *http.Request){
+
+//CARGAR JSON CON TIENDAS
+func cargartienda(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Json.Sobre
 	json.Unmarshal(body, &re)
-	//fmt.Println(re)
 	fmt.Println(re.Datos)
 	ConvertToMatrix(re)
+	ConvertToArray(matricita)
 }
-
-func request(){
-	myrouter := mux.NewRouter().StrictSlash(true)
-	myrouter.HandleFunc("/", homePage)
-	myrouter.HandleFunc("/getArreglo",getArreglo).Methods("GET")
-	myrouter.HandleFunc("/metodopost", metodopost).Methods("POST")
-	log.Fatal(http.ListenAndServe(":3000", myrouter))
-}
-
-
-
-
-
 func  ConvertToMatrix (sbr Json.Sobre) {
 
 	var Matriz []Indice
@@ -96,7 +96,7 @@ func  ConvertToMatrix (sbr Json.Sobre) {
 		var Departamentos []DepartamentoMatriz
 
 		for  depa,s := range r.Departamentos {
-            Departamento := DepartamentoMatriz{
+			Departamento := DepartamentoMatriz{
 				Nombre:         s.Nombre,
 			}
 
@@ -140,12 +140,90 @@ func  ConvertToMatrix (sbr Json.Sobre) {
 		for _,depa := range indi.Departamentos{
 			for _,cal := range depa.Calificaciones{
 				cal.Lista.ImprimirLista()
-				}
 			}
 		}
+	}
+}
+
+func ConvertToArray(Matriz []Indice){
+	 arreglo := IniciarArreglo(Matriz)
+	for  i,r := range Matriz{
+		for  j,s := range r.Departamentos {
+			for  k,t := range s.Calificaciones {
+				if t.Lista.IsEmpty(){
+					arreglo[i + (len(Matriz)-1) *( j + ((len(r.Departamentos)-1) * k))].Lista = t.Lista
+				}else{
+					for _,tiendaenarreglo := range ArregloBurbuja(t.Lista.ReturnNodes()) {
+						arreglo[i + (len(Matriz)-1) *( j + ((len(r.Departamentos)-1) * k))].Lista.Add(tiendaenarreglo)
+					}
+				}
+
+			}
+		}
+	}
+
+	ArregloCali = arreglo
+}
+func IniciarArreglo(Matriz []Indice)  []ArregloLinea{
+	var arreglo[]ArregloLinea
+	for  _,r := range Matriz{
+		for  _,s := range r.Departamentos {
+			for  _,t := range s.Calificaciones {
+				var nuevodatoarreglo = ArregloLinea{
+					IndiceNombre: r.Nombre,
+					Departamento: s.Nombre,
+					Calificacion: t.Calificacion,
+					Lista:        ListaDobleEnlazada.NewListaDoble(),
+				}
+				arreglo = append(arreglo, nuevodatoarreglo)
+			}
+		}
+	}
+	return arreglo
+}
+
+func ArregloBurbuja(ListaAOrdenar []Json.Tienda) []Json.Tienda{
+	var auxiliar Json.Tienda
+	for i := 0; i < len(ListaAOrdenar); i++ {
+		for j := i+1; j < len(ListaAOrdenar); j++ {
+			if ListaAOrdenar[i].Nombre > ListaAOrdenar[j].Nombre {
+				auxiliar = ListaAOrdenar[i]
+				ListaAOrdenar[i] = ListaAOrdenar[j]
+				ListaAOrdenar[j] = auxiliar
+			}
+		}
+	}
+	return ListaAOrdenar
+}
+//BUSCAR TIENDA ESPECIFICA
+func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
+	body, _ := ioutil.ReadAll(r.Body)
+	var re Json.Sobre
+	json.Unmarshal(body, &re)
+//EJECUTAR METODO PARA ENCONTRAR LA TIENDA
+}
+func BuscarTiendaEspecifica(Departamento string, NombreTienda string, calificacion int){
+
+}
+//ELIMINAR UNA TIENDA
+func Eliminar(w http.ResponseWriter, r *http.Request){
+	body, _ := ioutil.ReadAll(r.Body)
+	var re Json.Sobre
+	json.Unmarshal(body, &re)
+//EJECUTAR EL METODO PARA ELMINIAR LA TIENDA
+}
+func EliminarTienda(Departamentro string, NombreTienda string, calificacion int)  {
+
+}
+//GUARDAR EN JSON
+func Guardar(w http.ResponseWriter, r *http.Request) {
+
 }
 
 
+
+//CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
+//actualmente no se usa
 
 func crearMatriz3D( indice, departamento, calificacion int) [][][]*ListaDobleEnlazada.ListaDoble {
 	result := make([][][]*ListaDobleEnlazada.ListaDoble,indice)
