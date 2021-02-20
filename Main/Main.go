@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 
@@ -70,7 +71,7 @@ func request(){
 	myrouter.HandleFunc("/cargartienda", cargartienda).Methods("POST")
 	myrouter.HandleFunc("/TiendaEspecifica", TiendaEspecifica).Methods("POST")
 	myrouter.HandleFunc("/Eliminar", Eliminar).Methods("DELETE")
-	myrouter.HandleFunc("/Guardar", Guardar).Methods("POST")
+	myrouter.HandleFunc("/Guardar", Guardar).Methods("GET")
 	log.Fatal(http.ListenAndServe(":3000", myrouter))
 }
 
@@ -80,11 +81,73 @@ func request(){
 func homePage(w http.ResponseWriter, r *http.Request){
 	fmt.Fprintf(w,"Servidor en Go")
 }
+
+
+
 //REGRESAR GRAFICO DE COMO ESTA LA MEMORIA
 func getArreglo(w http.ResponseWriter, r *http.Request)  {
-	fmt.Fprintf(w, "[1,2,3,4]")
+	var path = "D:/Escritorio/USAC/EDD/Practica 1/Grafico.dot"
+	texto:="digraph G{" + "\n"
+
+	contador := 0
+	for _,cali := range ArregloCali{
+
+		if cali.Lista.IsEmpty(){
+
+			texto = texto + "node" + strconv.Itoa(contador) +`[label="` + "nulo"+`"` +"]" + "\n"
+			contador++
+		}else{
+			nodos := cali.Lista.ReturnNodes()
+
+			for j, recorriendo := range nodos{
+
+				texto = texto + "node" + strconv.Itoa(contador) +`[label="` + string(recorriendo.Nombre)+ `"` +"]" + "\n"
+				if j != len(nodos)-1{
+					texto = texto + "node" + strconv.Itoa(contador)+ " -> " + "node" + strconv.Itoa(contador+1)
+				}
+				contador++
+			}
+		}
+
+
+		texto = texto + "\n"
+	}
+
+	texto = texto + "}"
+
+	almacenarEnArchivoDot(path, texto)
 }
 
+func almacenarEnArchivoDot(path string, text string){
+	var _, erro = os.Stat(path)
+
+	//Crea el archivo si no existe
+	if os.IsNotExist(erro) {
+		var file, err = os.Create(path)
+		if existeError(err) {
+			return
+		}
+		defer file.Close()
+	}
+
+	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
+	if existeError(err) {
+		return
+	}
+	defer file.Close()
+
+	// Escribe algo de texto linea por linea
+	_, err = file.WriteString(text)
+	if existeError(err) {
+		return
+	}
+
+	// Salva los cambios
+	err = file.Sync()
+	if existeError(err) {
+		return
+	}
+}
 
 //CARGAR JSON CON TIENDAS-----------------------------------------------------------------------------------------
 func cargartienda(w http.ResponseWriter, r *http.Request){
@@ -330,10 +393,20 @@ func Eliminar(w http.ResponseWriter, r *http.Request){
 
 //GUARDAR EN JSON
 func Guardar(w http.ResponseWriter, r *http.Request) {
+	var path = "D:/Escritorio/USAC/EDD/Practica 1/Copia.Json"
 
+	var Matriz = matricita
 
+	for  i:=0; i<len(Matriz);i++ {
+		for j :=0; j <len(Matriz[i].Departamentos); j++ {
+			for k :=0; k <len(Matriz[i].Departamentos[j].Calificaciones); k++ {
+				Matriz[i].Departamentos[j].Calificaciones[k].Lista = ArregloCali[k+(len(Matriz))*(k+(len(Matriz[i].Departamentos))*k)].Lista
+			}
+		}
+	}
 
-
+	crear_json, _ := json.Marshal(Matriz)
+	almacenarEnArchivo(path, crear_json)
 }
 
 
@@ -341,12 +414,12 @@ func Guardar(w http.ResponseWriter, r *http.Request) {
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 
-func crearMatriz3D( indice, departamento, calificacion int) [][][]*ListaDobleEnlazada.ListaDoble {
-	result := make([][][]*ListaDobleEnlazada.ListaDoble,indice)
+func crearMatriz3D( indice, departamento, calificacion int) [][][]ListaDobleEnlazada.ListaDoble {
+	result := make([][][]ListaDobleEnlazada.ListaDoble,indice)
 	for i := 0 ; i < indice ; i++ {
-		result[i] = make([][]*ListaDobleEnlazada.ListaDoble,departamento);
+		result[i] = make([][]ListaDobleEnlazada.ListaDoble,departamento);
 		for j := 0; j < departamento; j++ {
-			result[i][j] = make([]*ListaDobleEnlazada.ListaDoble,calificacion);
+			result[i][j] = make([]ListaDobleEnlazada.ListaDoble,calificacion);
 			for k := 0 ; k < calificacion; k++ {
 				//result[i][j][k] = ListaDobleEnlazada.NewListaDoble()
 			}
