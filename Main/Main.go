@@ -86,7 +86,7 @@ func getArreglo(w http.ResponseWriter, r *http.Request)  {
 }
 
 
-//CARGAR JSON CON TIENDAS-------------------------------------------------
+//CARGAR JSON CON TIENDAS-----------------------------------------------------------------------------------------
 func cargartienda(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Json.Sobre
@@ -226,7 +226,7 @@ func ArregloBurbuja(ListaAOrdenar []Json.Tienda) []Json.Tienda{
 
 
 
-//BUSCAR TIENDA ESPECIFICA-------------------------------------------------
+//BUSCAR TIENDA ESPECIFICA-----------------------------------------------------------------------------------------
 func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Json.BusquedaEspecifica
@@ -240,12 +240,14 @@ func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 				if cali.Lista.Search(re.Nombre) != -1 {
 					TiendaEncontrada = cali.Lista.SearchNReturn(re.Nombre)
 					fmt.Fprint(w,"Se encontro coincidencia ", TiendaEncontrada.Calificacion, TiendaEncontrada.Nombre, TiendaEncontrada.Descripcion, TiendaEncontrada.Contacto)
+					println("Se encontro coincidencia ", TiendaEncontrada.Calificacion, TiendaEncontrada.Nombre, TiendaEncontrada.Descripcion, TiendaEncontrada.Contacto)
 					imprimir = false
 					GenerarJsonCoincidencia(TiendaEncontrada)
 				}
 			}
 	}
 	if imprimir {
+		println("No se encontro ninguna coincidencia")
 		fmt.Fprint(w, "No se encontro ninguna coincidencia")
 	}
 }
@@ -299,17 +301,29 @@ func existeError(err error) bool {
 }
 
 
-//ELIMINAR UNA TIENDA---------------------------------------------------
+//ELIMINAR UNA TIENDA--------------------------------------------------------------------------------------------------
 func Eliminar(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
-	var re Json.Sobre
+	var re Json.EliminarTienda
 	json.Unmarshal(body, &re)
-//EJECUTAR EL METODO PARA ELMINIAR LA TIENDA
+	println("Buscando coincidencias con los siguientes parametros: ","Nombre: " ,re.Nombre, "Categoria: ",re.Categoria,"Calificacion: " ,re.Calificacion)
+	//EJECUTAR METODO PARA ELIMINAR UNA TIENDA
 
+	imprimir := true
+	for _, cali := range ArregloCali{
+		if (cali.Calificacion == re.Calificacion) && (cali.Departamento == re.Categoria) {
+			if cali.Lista.Search(re.Nombre) != -1 {
+				println("Se encontro coincidencia ", re.Calificacion, re.Nombre, re.Categoria)
+				cali.Lista.DeleteByName(re.Nombre)
+				imprimir = false
 
-}
-func EliminarTienda(Departamentro string, NombreTienda string, calificacion int)  {
-
+			}
+		}
+	}
+	if imprimir {
+		println("No se encontro ninguna coincidencia")
+		fmt.Fprint(w, "No se encontro ninguna coincidencia")
+	}
 }
 
 

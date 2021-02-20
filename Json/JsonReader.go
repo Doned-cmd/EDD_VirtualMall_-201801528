@@ -30,4 +30,8 @@ type BusquedaEspecifica struct {
 	Calificacion int
 }
 
-
+type EliminarTienda struct {
+	Nombre string
+	Categoria string
+	Calificacion int
+}
