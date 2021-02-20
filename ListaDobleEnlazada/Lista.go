@@ -91,22 +91,37 @@ func (d *ListaDoble) DeleteByIndex(index int) *Nodo{
 }
 
 func (d *ListaDoble) Search(nombre string) int{
-	var contador int
+	contador := 0
 	if d.IsEmpty(){
+		return -1
 	}else{
 		aux := d.head
-		for d.head.next != nil {
+		for d.head != nil {
 			if  d.head.dato.Nombre == nombre {
-				break
+				d.head = aux
+				return contador
 			}
 			d.head = d.head.next
 			contador++
 		}
-		return contador
 		d.head = aux
 	}
 	return -1
 }
+
+func (d *ListaDoble) SearchNReturn(nombre string) Json.Tienda{
+	var coincidencia Json.Tienda
+	aux := d.head
+	for d.head != nil {
+		if  d.head.dato.Nombre == nombre {
+			coincidencia = d.head.dato
+		}
+		d.head = d.head.next
+	}
+	d.head = aux
+	return coincidencia
+}
+
 
 func (d *ListaDoble) SearchIndex(index int) *Nodo {
 	if d.IsEmpty(){
@@ -126,10 +141,14 @@ func (d *ListaDoble) ImprimirLista() {
 		println("No se puede imprimir nada, la lista esta vacia")
 	}else{
 		aux := d.head
+		println("-----------------------------------------------------------------------------------------")
 		for aux != nil{
+
 			println(aux.dato.Nombre, " ", aux.dato.Calificacion, " ",aux.dato.Descripcion ," ",aux.dato.Contacto)
+
 			aux = aux.next
 		}
+		println("-----------------------------------------------------------------------------------------")
 	}
 
 }

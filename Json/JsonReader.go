@@ -24,6 +24,10 @@ type Sobre struct {
 	Datos []Dato
 }
 
-
+type BusquedaEspecifica struct {
+	Departamento string
+	Nombre string
+	Calificacion int
+}
 
 

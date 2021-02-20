@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 
@@ -44,11 +45,22 @@ var ArregloCali []ArregloLinea
 
 func main() {
 
-
-
 	//fmt.Print()
-	//request()
+	request()
+	//print(Regresar(3))
+}
 
+func Regresar(b int) int {
+	 contador := -1
+	a := [5]int{0,1,2,3,4}
+	for _, i:=  range a {
+		contador++
+		if i == b {
+			return contador
+		}
+	}
+	println("se realiza")
+	return -1
 }
 
 func request(){
@@ -74,7 +86,7 @@ func getArreglo(w http.ResponseWriter, r *http.Request)  {
 }
 
 
-//CARGAR JSON CON TIENDAS
+//CARGAR JSON CON TIENDAS-------------------------------------------------
 func cargartienda(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Json.Sobre
@@ -83,6 +95,7 @@ func cargartienda(w http.ResponseWriter, r *http.Request){
 	ConvertToMatrix(re)
 	ConvertToArray(matricita)
 }
+//convertir a matriz
 func  ConvertToMatrix (sbr Json.Sobre) {
 
 	var Matriz []Indice
@@ -146,24 +159,39 @@ func  ConvertToMatrix (sbr Json.Sobre) {
 }
 
 func ConvertToArray(Matriz []Indice){
-	 arreglo := IniciarArreglo(Matriz)
+	arreglo := IniciarArreglo(Matriz)
+	println()
+	println("Arreglo")
 	for  i,r := range Matriz{
 		for  j,s := range r.Departamentos {
-			for  k,t := range s.Calificaciones {
-				if t.Lista.IsEmpty(){
-					arreglo[i + (len(Matriz)-1) *( j + ((len(r.Departamentos)-1) * k))].Lista = t.Lista
+			for  k,cali := range s.Calificaciones {
+				if cali.Lista.IsEmpty() {
+					arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].IndiceNombre = r.Nombre
+					arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Departamento = s.Nombre
+					arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Calificacion = cali.Calificacion
+					arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Lista = cali.Lista
+					//arreglo[i + (len(Matriz)-1) * (j + (len(r.Departamentos)-1) * k) ].Lista.ImprimirLista()
 				}else{
-					for _,tiendaenarreglo := range ArregloBurbuja(t.Lista.ReturnNodes()) {
-						arreglo[i + (len(Matriz)-1) *( j + ((len(r.Departamentos)-1) * k))].Lista.Add(tiendaenarreglo)
+					for _,tiendaenarreglo := range ArregloBurbuja(cali.Lista.ReturnNodes()) {
+						arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].IndiceNombre = r.Nombre
+						arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Departamento = s.Nombre
+						arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Calificacion = cali.Calificacion
+						arreglo[i+(len(Matriz))*(j+(len(r.Departamentos))*k)].Lista.Add(tiendaenarreglo)
 					}
 				}
-
 			}
 		}
 	}
 
 	ArregloCali = arreglo
+
+	for _,i:= range arreglo{
+		print(i.IndiceNombre, " ",i.Departamento, " ",i.Calificacion, " ")
+		i.Lista.ImprimirLista()
+	}
 }
+
+//Inicia el arreglo para poder ingresar las listas con la formula de column major
 func IniciarArreglo(Matriz []Indice)  []ArregloLinea{
 	var arreglo[]ArregloLinea
 	for  _,r := range Matriz{
@@ -195,28 +223,102 @@ func ArregloBurbuja(ListaAOrdenar []Json.Tienda) []Json.Tienda{
 	}
 	return ListaAOrdenar
 }
-//BUSCAR TIENDA ESPECIFICA
+
+
+
+//BUSCAR TIENDA ESPECIFICA-------------------------------------------------
 func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
-	var re Json.Sobre
+	var re Json.BusquedaEspecifica
 	json.Unmarshal(body, &re)
+	println("Buscando coincidencias con los siguientes parametros: ","Nombre: " ,re.Nombre, "Departamento: ",re.Departamento,"Calificacion: " ,re.Calificacion)
 //EJECUTAR METODO PARA ENCONTRAR LA TIENDA
+	var TiendaEncontrada Json.Tienda
+	imprimir := true
+	for _, cali := range ArregloCali{
+			if (cali.Calificacion == re.Calificacion) && (cali.Departamento == re.Departamento) {
+				if cali.Lista.Search(re.Nombre) != -1 {
+					TiendaEncontrada = cali.Lista.SearchNReturn(re.Nombre)
+					fmt.Fprint(w,"Se encontro coincidencia ", TiendaEncontrada.Calificacion, TiendaEncontrada.Nombre, TiendaEncontrada.Descripcion, TiendaEncontrada.Contacto)
+					imprimir = false
+					GenerarJsonCoincidencia(TiendaEncontrada)
+				}
+			}
+	}
+	if imprimir {
+		fmt.Fprint(w, "No se encontro ninguna coincidencia")
+	}
 }
-func BuscarTiendaEspecifica(Departamento string, NombreTienda string, calificacion int){
 
+
+func GenerarJsonCoincidencia(Tienda Json.Tienda) {
+
+	var path = "D:/Escritorio/USAC/EDD/Practica 1/Coincidencia.Json"
+
+	crear_json, _ := json.Marshal(Tienda)
+	almacenarEnArchivo(path, crear_json)
 }
-//ELIMINAR UNA TIENDA
+
+func almacenarEnArchivo(path string, text []byte){
+	var _, erro = os.Stat(path)
+
+	//Crea el archivo si no existe
+	if os.IsNotExist(erro) {
+		var file, err = os.Create(path)
+		if existeError(err) {
+			return
+		}
+		defer file.Close()
+	}
+
+	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
+	if existeError(err) {
+		return
+	}
+	defer file.Close()
+
+	// Escribe algo de texto linea por linea
+	_, err = file.WriteString(string(text))
+	if existeError(err) {
+		return
+	}
+
+	// Salva los cambios
+	err = file.Sync()
+	if existeError(err) {
+		return
+	}
+}
+
+
+func existeError(err error) bool {
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return (err != nil)
+}
+
+
+//ELIMINAR UNA TIENDA---------------------------------------------------
 func Eliminar(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Json.Sobre
 	json.Unmarshal(body, &re)
 //EJECUTAR EL METODO PARA ELMINIAR LA TIENDA
+
+
 }
 func EliminarTienda(Departamentro string, NombreTienda string, calificacion int)  {
 
 }
+
+
+
 //GUARDAR EN JSON
 func Guardar(w http.ResponseWriter, r *http.Request) {
+
+
+
 
 }
 
