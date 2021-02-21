@@ -3,6 +3,7 @@ package Json
 import(
 
 )
+
 //Conseguir datos Json
 type Tienda struct {
 	Nombre string
@@ -23,7 +24,7 @@ type Dato struct {
 type Sobre struct {
 	Datos []Dato
 }
-
+//Estructuras para Buscar coincidencias
 type BusquedaEspecifica struct {
 	Departamento string
 	Nombre string

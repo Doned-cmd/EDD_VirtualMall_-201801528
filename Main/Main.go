@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 )
 
@@ -137,17 +138,24 @@ func almacenarEnArchivoDot(path string, text string){
 	}
 	defer file.Close()
 
-	// Escribe algo de texto linea por linea
+	// Escribe el texto en el archivo
 	_, err = file.WriteString(text)
 	if existeError(err) {
 		return
 	}
 
-	// Salva los cambios
+	// Guarda los cambios
 	err = file.Sync()
 	if existeError(err) {
 		return
 	}
+
+	//Creación de la imagen
+	path1, _ := exec.LookPath("dot")
+
+	cmd, _ := exec.Command(path1, "-Tpng", "Grafico.dot").Output() //En esta parte en lugar de graph va el nombre de tu grafica
+	mode := int(0777) //Se mantiene igual
+	ioutil.WriteFile("List.png", cmd, os.FileMode(mode)) //Creacion de la imagen
 }
 
 //CARGAR JSON CON TIENDAS-----------------------------------------------------------------------------------------
@@ -249,7 +257,7 @@ func ConvertToArray(Matriz []Indice){
 
 	ArregloCali = arreglo
 
-	for num,i:= range arreglo{
+	for num,i:= range ArregloCali{
 		print( num, i.IndiceNombre, " ",i.Departamento, " ",i.Calificacion, " ")
 		i.Lista.ImprimirLista()
 	}
@@ -397,18 +405,44 @@ func Eliminar(w http.ResponseWriter, r *http.Request){
 func Guardar(w http.ResponseWriter, r *http.Request) {
 	var path = "D:/Escritorio/USAC/EDD/Practica 1/Copia.Json"
 
-	var Matriz = matricita
+	Matriz := matricita
+	var sbr Json.Sobre
+
 
 	for  i:=0; i<len(Matriz);i++ {
+		dato := Json.Dato{
+			Indice:      Matriz[i].Nombre,
+		}
+		sbr.Datos = append(sbr.Datos, dato)
+
+
 		for j :=0; j <len(Matriz[i].Departamentos); j++ {
+			depa := Json.Departamento{
+				Nombre:   Matriz[i].Departamentos[j].Nombre,
+
+			}
+			sbr.Datos[i].Departamentos = append(sbr.Datos[i].Departamentos, depa)
+			//var tiendas []Json.Tienda
 			for k :=0; k <len(Matriz[i].Departamentos[j].Calificaciones); k++ {
-				
-				Matriz[i].Departamentos[j].Calificaciones[k].Lista = ArregloCali[k+(len(Matriz))*(k+(len(Matriz[i].Departamentos))*k)].Lista
+				Matriz[i].Departamentos[j].Calificaciones[k].Lista = ArregloCali[i+(len(Matriz))*(j+(len(Matriz[i].Departamentos))*k)].Lista
+
+				if Matriz[i].Departamentos[j].Calificaciones[k].Lista.IsEmpty() {
+
+				}else{
+					for _, store :=  range Matriz[i].Departamentos[j].Calificaciones[k].Lista.ReturnNodes() {
+						sbr.Datos[i].Departamentos[j].Tiendas = append(sbr.Datos[i].Departamentos[j].Tiendas, store)
+						//println(tiendas[l].Nombre)
+					}
+				}
 			}
 		}
 	}
 
-	crear_json, _ := json.Marshal(Matriz)
+
+
+
+
+	crear_json, _ := json.Marshal(sbr)
 	almacenarEnArchivo(path, crear_json)
 }
 
