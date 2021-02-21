@@ -72,6 +72,7 @@ func request(){
 	myrouter.HandleFunc("/TiendaEspecifica", TiendaEspecifica).Methods("POST")
 	myrouter.HandleFunc("/Eliminar", Eliminar).Methods("DELETE")
 	myrouter.HandleFunc("/Guardar", Guardar).Methods("GET")
+	myrouter.HandleFunc("/id/{indice}", ShowByID).Methods("GET")
 	log.Fatal(http.ListenAndServe(":3000", myrouter))
 }
 
@@ -101,9 +102,9 @@ func getArreglo(w http.ResponseWriter, r *http.Request)  {
 
 			for j, recorriendo := range nodos{
 
-				texto = texto + "node" + strconv.Itoa(contador) +`[label="` + string(recorriendo.Nombre)+ `"` +"]" + "\n"
+				texto = texto + "node" + strconv.Itoa(contador) +`[label="` + recorriendo.Nombre + `"` +"]" + "\n"
 				if j != len(nodos)-1{
-					texto = texto + "node" + strconv.Itoa(contador)+ " -> " + "node" + strconv.Itoa(contador+1)
+					texto = texto + "node" + strconv.Itoa(contador)+ " -> " + "node" + strconv.Itoa(contador+1) + "\n"
 				}
 				contador++
 			}
@@ -248,8 +249,8 @@ func ConvertToArray(Matriz []Indice){
 
 	ArregloCali = arreglo
 
-	for _,i:= range arreglo{
-		print(i.IndiceNombre, " ",i.Departamento, " ",i.Calificacion, " ")
+	for num,i:= range arreglo{
+		print( num, i.IndiceNombre, " ",i.Departamento, " ",i.Calificacion, " ")
 		i.Lista.ImprimirLista()
 	}
 }
@@ -306,6 +307,7 @@ func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 					println("Se encontro coincidencia ", TiendaEncontrada.Calificacion, TiendaEncontrada.Nombre, TiendaEncontrada.Descripcion, TiendaEncontrada.Contacto)
 					imprimir = false
 					GenerarJsonCoincidencia(TiendaEncontrada)
+					json.NewEncoder(w).Encode(TiendaEncontrada)
 				}
 			}
 	}
@@ -400,6 +402,7 @@ func Guardar(w http.ResponseWriter, r *http.Request) {
 	for  i:=0; i<len(Matriz);i++ {
 		for j :=0; j <len(Matriz[i].Departamentos); j++ {
 			for k :=0; k <len(Matriz[i].Departamentos[j].Calificaciones); k++ {
+				
 				Matriz[i].Departamentos[j].Calificaciones[k].Lista = ArregloCali[k+(len(Matriz))*(k+(len(Matriz[i].Departamentos))*k)].Lista
 			}
 		}
@@ -407,6 +410,23 @@ func Guardar(w http.ResponseWriter, r *http.Request) {
 
 	crear_json, _ := json.Marshal(Matriz)
 	almacenarEnArchivo(path, crear_json)
+}
+
+//MOSTRAR RESULTADO POR INDICE
+func ShowByID(w http.ResponseWriter, r *http.Request){
+	parametro:= mux.Vars(r)
+	i:= parametro["indice"]
+	println(i)
+	for x,correr := range ArregloCali {
+		if  strconv.Itoa(x+1) == i{
+			path := "D:/Escritorio/USAC/EDD/Practica 1/CoincidenciaPorIndice.Json"
+			tienditas := correr.Lista.ReturnNodes()
+			crear_json, _ := json.Marshal(tienditas)
+			json.NewEncoder(w).Encode(tienditas)
+			almacenarEnArchivo( path,crear_json)
+		}
+	}
+
 }
 
 
