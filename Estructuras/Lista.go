@@ -1,12 +1,12 @@
-package ListaDobleEnlazada
-
-import (
-	"../Json"
-)
+package Estructuras
 
 type Nodo struct {
-	 dato Json.Tienda
+	 dato Tienda
 	 next, previous *Nodo
+}
+
+func (n *Nodo) GetTienda() *Tienda {
+	return &n.dato
 }
 
 type ListaDoble struct {
@@ -25,7 +25,7 @@ func (d *ListaDoble) IsEmpty() bool{
 	return false
 }
 
-func (d *ListaDoble) Add(dato Json.Tienda)  {
+func (d *ListaDoble) Add(dato Tienda)  {
 	nuevoNodo := &Nodo{dato,nil,nil}
 	if d.IsEmpty(){
 		d.head = nuevoNodo
@@ -34,6 +34,7 @@ func (d *ListaDoble) Add(dato Json.Tienda)  {
 	}else {
 		d.last.next = nuevoNodo
 		nuevoNodo.previous = d.last
+		d.last = nuevoNodo
 		d.size ++
 	}
 }
@@ -81,36 +82,36 @@ func (d *ListaDoble) DeleteByName(nombre string) *Nodo{
 func (d *ListaDoble) DeleteByIndex(index int) *Nodo{
 	if d.IsEmpty(){
 		println("No se puede eliminar nada, la lista esta vacia")
+		return nil
 	}else{
 		aux := d.head
 		for i := 0; i < index; i++ {
 			aux = aux.next
 		}
+		return aux
 	}
-	return &Nodo{}
 }
 
 func (d *ListaDoble) Search(nombre string) int{
-	contador := 0
-	if d.IsEmpty(){
-		return -1
-	}else{
+	contador:=0
+	if !d.IsEmpty(){
 		aux := d.head
-		for d.head != nil {
-			if  d.head.dato.Nombre == nombre {
-				d.head = aux
+		for aux!=nil{
+			if nombre == aux.dato.Nombre{
 				return contador
 			}
-			d.head = d.head.next
+			//fmt.Print(nombre)
+			//fmt.Println(aux.dato.Nombre)
+			//fmt.Println(aux.dato.Nombre, contador)
+			aux = aux.next
 			contador++
 		}
-		d.head = aux
 	}
 	return -1
 }
 
-func (d *ListaDoble) SearchNReturn(nombre string) Json.Tienda{
-	var coincidencia Json.Tienda
+func (d *ListaDoble) SearchNReturn(nombre string) Tienda{
+	var coincidencia Tienda
 	aux := d.head
 	for d.head != nil {
 		if  d.head.dato.Nombre == nombre {
@@ -121,11 +122,23 @@ func (d *ListaDoble) SearchNReturn(nombre string) Json.Tienda{
 	d.head = aux
 	return coincidencia
 }
-
+func (d *ListaDoble) SearchNReturnM(nombre string) *Tienda{
+	var coincidencia *Tienda
+	aux := d.head
+	for d.head != nil {
+		if  d.head.dato.Nombre == nombre {
+			coincidencia = (&d.head.dato)
+		}
+		d.head = d.head.next
+	}
+	d.head = aux
+	return coincidencia
+}
 
 func (d *ListaDoble) SearchIndex(index int) *Nodo {
 	if d.IsEmpty(){
 		println("No se puede encontrar nada, la lista esta vacia")
+		return nil
 	}else{
 		aux := d.head
 		for i := 0; i < index; i++ {
@@ -133,12 +146,13 @@ func (d *ListaDoble) SearchIndex(index int) *Nodo {
 		}
 		return aux
 	}
-	return nil
 }
 
 func (d *ListaDoble) ImprimirLista() {
 	if d.IsEmpty(){
+		println("-----------------------------------------------------------------------------------------")
 		println("No se puede imprimir nada, la lista esta vacia")
+		println("-----------------------------------------------------------------------------------------")
 	}else{
 		aux := d.head
 		println("-----------------------------------------------------------------------------------------")
@@ -153,8 +167,8 @@ func (d *ListaDoble) ImprimirLista() {
 
 }
 
-func (d *ListaDoble) ReturnNodes() []Json.Tienda {
-	var ArregloTiendas []Json.Tienda
+func (d *ListaDoble) ReturnNodes() []Tienda {
+	var ArregloTiendas []Tienda
 	aux := d.head
 	for aux != nil{
 		ArregloTiendas = append(ArregloTiendas, aux.dato)

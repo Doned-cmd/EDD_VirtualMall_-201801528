@@ -1,17 +1,20 @@
 package main
 
 import (
-	"../Json"
-	"../ListaDobleEnlazada"
+	"../Estructuras"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	_ "io"
 	"io/ioutil"
 	"log"
 	"net/http"
+
 	"os"
 	"os/exec"
 	"strconv"
+
 )
 
 
@@ -26,7 +29,7 @@ type DepartamentoMatriz struct {
 }
 type Calificacion struct {
 	Calificacion int
-	Lista *ListaDobleEnlazada.ListaDoble
+	Lista *Estructuras.ListaDoble
 }
 
 
@@ -37,7 +40,7 @@ type ArregloLinea struct {
 	Departamento string
 	Calificacion int
 
-	Lista *ListaDobleEnlazada.ListaDoble
+	Lista *Estructuras.ListaDoble
 }
 
 //Arreglos de datos
@@ -46,23 +49,17 @@ var ArregloCali []ArregloLinea
 
 
 func main() {
-
+	//var numeros []int
+	//numeros = append(numeros, 1)
 	//fmt.Print()
 	request()
 	//print(Regresar(3))
+	//Regresar(&(numeros))
+	//fmt.Print(numeros)
 }
 
-func Regresar(b int) int {
-	 contador := -1
-	a := [5]int{0,1,2,3,4}
-	for _, i:=  range a {
-		contador++
-		if i == b {
-			return contador
-		}
-	}
-	println("se realiza")
-	return -1
+func Regresar(numeros *[]int)  {
+	*numeros = append(*numeros, 5)
 }
 
 func request(){
@@ -74,7 +71,12 @@ func request(){
 	myrouter.HandleFunc("/Eliminar", Eliminar).Methods("DELETE")
 	myrouter.HandleFunc("/Guardar", Guardar).Methods("GET")
 	myrouter.HandleFunc("/id/{indice}", ShowByID).Methods("GET")
-	log.Fatal(http.ListenAndServe(":3000", myrouter))
+	myrouter.HandleFunc("/cargarInventario", CargarInventario).Methods("POST")
+	myrouter.HandleFunc("/getListaTiendas", DevolverlistaTiendas).Methods("GET")
+	myrouter.HandleFunc("/getTiendaActual", TiendaActual).Methods("POST")
+	myrouter.HandleFunc("/getListaProductos", DevolverlistaProductos).Methods("GET")
+	myrouter.HandleFunc("/cargarPedido", CargarPedido).Methods("POST")
+	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
 
@@ -161,14 +163,14 @@ func almacenarEnArchivoDot(path string, text string){
 //CARGAR JSON CON TIENDAS-----------------------------------------------------------------------------------------
 func cargartienda(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
-	var re Json.Sobre
+	var re Estructuras.Sobre
 	json.Unmarshal(body, &re)
 	fmt.Println(re.Datos)
 	ConvertToMatrix(re)
 	ConvertToArray(matricita)
 }
 //convertir a matriz
-func  ConvertToMatrix (sbr Json.Sobre) {
+func  ConvertToMatrix (sbr Estructuras.Sobre) {
 
 	var Matriz []Indice
 	for  ind,r := range sbr.Datos {
@@ -190,7 +192,7 @@ func  ConvertToMatrix (sbr Json.Sobre) {
 			for i :=0; i<5; i++ {
 				calificaciones[i]= Calificacion{
 					Calificacion: i,
-					Lista:      ListaDobleEnlazada.NewListaDoble(),
+					Lista:        Estructuras.NewListaDoble(),
 				}
 			}
 
@@ -220,14 +222,14 @@ func  ConvertToMatrix (sbr Json.Sobre) {
 	}
 	matricita = Matriz
 	println()
-	println("Matricitia")
-	for _,indi := range matricita{
-		for _,depa := range indi.Departamentos{
-			for _,cal := range depa.Calificaciones{
-				cal.Lista.ImprimirLista()
-			}
-		}
-	}
+	//println("Matricitia")
+	//for _,indi := range matricita{
+	//	for _,depa := range indi.Departamentos{
+	//		for _,cal := range depa.Calificaciones{
+	//			cal.Lista.ImprimirLista()
+	//		}
+	//	}
+	//}
 }
 
 func ConvertToArray(Matriz []Indice){
@@ -258,8 +260,10 @@ func ConvertToArray(Matriz []Indice){
 	ArregloCali = arreglo
 
 	for num,i:= range ArregloCali{
+		println("++++++++++++++++++++++++++++++++++++++++++++")
 		print( num, i.IndiceNombre, " ",i.Departamento, " ",i.Calificacion, " ")
 		i.Lista.ImprimirLista()
+		println("++++++++++++++++++++++++++++++++++++++++++++")
 	}
 }
 
@@ -273,7 +277,7 @@ func IniciarArreglo(Matriz []Indice)  []ArregloLinea{
 					IndiceNombre: r.Nombre,
 					Departamento: s.Nombre,
 					Calificacion: t.Calificacion,
-					Lista:        ListaDobleEnlazada.NewListaDoble(),
+					Lista:        Estructuras.NewListaDoble(),
 				}
 				arreglo = append(arreglo, nuevodatoarreglo)
 			}
@@ -282,14 +286,14 @@ func IniciarArreglo(Matriz []Indice)  []ArregloLinea{
 	return arreglo
 }
 
-func ArregloBurbuja(ListaAOrdenar []Json.Tienda) []Json.Tienda{
-	var auxiliar Json.Tienda
+func ArregloBurbuja(ListaAOrdenar []Estructuras.Tienda) []Estructuras.Tienda{
+	var auxiliar Estructuras.Tienda
 	for i := 0; i < len(ListaAOrdenar); i++ {
-		for j := i+1; j < len(ListaAOrdenar); j++ {
-			if ListaAOrdenar[i].Nombre > ListaAOrdenar[j].Nombre {
-				auxiliar = ListaAOrdenar[i]
-				ListaAOrdenar[i] = ListaAOrdenar[j]
-				ListaAOrdenar[j] = auxiliar
+		for j := 0; j < len(ListaAOrdenar)-1; j++ {
+			if ListaAOrdenar[j].Nombre > ListaAOrdenar[j+1].Nombre {
+				auxiliar = ListaAOrdenar[j]
+				ListaAOrdenar[j] = ListaAOrdenar[j+1]
+				ListaAOrdenar[j+1] = auxiliar
 			}
 		}
 	}
@@ -301,14 +305,16 @@ func ArregloBurbuja(ListaAOrdenar []Json.Tienda) []Json.Tienda{
 //BUSCAR TIENDA ESPECIFICA-----------------------------------------------------------------------------------------
 func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
-	var re Json.BusquedaEspecifica
+	var re Estructuras.BusquedaEspecifica
 	json.Unmarshal(body, &re)
 	println("Buscando coincidencias con los siguientes parametros: ","Nombre: " ,re.Nombre, "Departamento: ",re.Departamento,"Calificacion: " ,re.Calificacion)
 //EJECUTAR METODO PARA ENCONTRAR LA TIENDA
-	var TiendaEncontrada Json.Tienda
+	var TiendaEncontrada Estructuras.Tienda
 	imprimir := true
 	for _, cali := range ArregloCali{
-			if (cali.Calificacion == re.Calificacion) && (cali.Departamento == re.Departamento) {
+		fmt.Println(cali.Calificacion )
+			if (cali.Calificacion+1 == re.Calificacion) && (cali.Departamento == re.Departamento) {
+
 				if cali.Lista.Search(re.Nombre) != -1 {
 					TiendaEncontrada = cali.Lista.SearchNReturn(re.Nombre)
 					fmt.Fprint(w,"Se encontro coincidencia ", TiendaEncontrada.Calificacion, TiendaEncontrada.Nombre, TiendaEncontrada.Descripcion, TiendaEncontrada.Contacto)
@@ -326,7 +332,7 @@ func TiendaEspecifica(w http.ResponseWriter, r *http.Request){
 }
 
 
-func GenerarJsonCoincidencia(Tienda Json.Tienda) {
+func GenerarJsonCoincidencia(Tienda Estructuras.Tienda) {
 
 	var path = "D:/Escritorio/USAC/EDD/Practica 1/Coincidencia.Json"
 
@@ -377,7 +383,7 @@ func existeError(err error) bool {
 //ELIMINAR UNA TIENDA--------------------------------------------------------------------------------------------------
 func Eliminar(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
-	var re Json.EliminarTienda
+	var re Estructuras.EliminarTienda
 	json.Unmarshal(body, &re)
 	println("Buscando coincidencias con los siguientes parametros: ","Nombre: " ,re.Nombre, "Categoria: ",re.Categoria,"Calificacion: " ,re.Calificacion)
 	//EJECUTAR METODO PARA ELIMINAR UNA TIENDA
@@ -406,18 +412,18 @@ func Guardar(w http.ResponseWriter, r *http.Request) {
 	var path = "D:/Escritorio/USAC/EDD/Practica 1/Copia.Json"
 
 	Matriz := matricita
-	var sbr Json.Sobre
+	var sbr Estructuras.Sobre
 
 
 	for  i:=0; i<len(Matriz);i++ {
-		dato := Json.Dato{
+		dato := Estructuras.Dato{
 			Indice:      Matriz[i].Nombre,
 		}
 		sbr.Datos = append(sbr.Datos, dato)
 
 
 		for j :=0; j <len(Matriz[i].Departamentos); j++ {
-			depa := Json.Departamento{
+			depa := Estructuras.Departamento{
 				Nombre:   Matriz[i].Departamentos[j].Nombre,
 
 			}
@@ -462,20 +468,177 @@ func ShowByID(w http.ResponseWriter, r *http.Request){
 	}
 
 }
+//Cargar Inventarios --------------------------------------------------------------------------------------------------------------------
+
+func CargarInventario(w http.ResponseWriter, r *http.Request){
+	body, _ := ioutil.ReadAll(r.Body)
+	var re Estructuras.SobreInventario
+	json.Unmarshal(body, &re)
+	//fmt.Println(re.Invetarios)
+	agregarAArbol(re)
+
+}
+func agregarAArbol(re Estructuras.SobreInventario){
+	for _,inventario := range re.Invetarios{
+		//fmt.Println(inventario)
+		if buscarTienda(inventario){//Se busca si la tienda existe
+			//TiendaA := RegresarTienda(inventario)
+			for _,producto := range inventario.Productos {
+				fmt.Println(producto.Nombre, producto.Descripcion, producto.Cantidad)
+				if buscarProducto( inventario,producto){
+					ActualizarInventarioSumando(inventario,producto)
+				}else{
+					agregarAArreglo(inventario,producto)
+				}
+			}
+		}
+	}
+}
+func ActualizarInventarioSumando(inventario Estructuras.Invetarios ,producto Estructuras.Producto){
+	for   _, cali := range ArregloCali{
+		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
+			if cali.Lista.Search(inventario.Tienda) != -1 {
+				cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.SumarInventario(producto)
+			}
+		}
+	}
+}
+
+func agregarAArreglo(inventario Estructuras.Invetarios ,producto Estructuras.Producto){
+	for   _, cali := range ArregloCali{
+		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
+			//fmt.Println(producto)
+			if cali.Lista.Search(inventario.Tienda) != -1 {
+				cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.Insertar(producto)
+			}
+		}
+	}
+}
+
+func buscarProducto(inventario Estructuras.Invetarios ,producto Estructuras.Producto) bool{
+	for   _, cali := range ArregloCali{
+		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
+			if cali.Lista.Search(inventario.Tienda) != -1 {
+				if cali.Lista.SearchIndex(cali.Lista.Search(producto.Nombre)).GetTienda().Productos.Raiz == nil{
+					return false
+				}else if cali.Lista.SearchIndex(cali.Lista.Search(producto.Nombre)).GetTienda().Productos.SearchProductExists(producto){
+					return true
+				} else {
+					return false
+				}
+			}
+		}
+	}
+
+	return false
+}
+func buscarTienda(inventario Estructuras.Invetarios) bool{
+	//EJECUTAR METODO PARA ENCONTRAR LA TIENDA
+	//var TiendaEncontrada Estructuras.Tienda
+		//fmt.Println("Se busca la coincidencia: ", inventario.Tienda)
+	for _, cali := range ArregloCali{
+		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
+			//fmt.Println(inventario.Tienda)
+			//fmt.Println(cali.Lista.Search(inventario.Tienda))
+			if cali.Lista.Search(inventario.Tienda) != -1 {
+				return true
+			}
+		}
+	}
+	return false
+}
+func RegresarTienda(inventario Estructuras.Invetarios) *Estructuras.Tienda{
+	for _, cali := range ArregloCali{
+		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
+			//fmt.Println(inventario.Tienda)
+			//fmt.Println(cali.Lista.Search(inventario.Tienda))
+			if cali.Lista.Search(inventario.Tienda) != -1 {
+				return cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda()
+			}
+		}
+	}
+	return nil
+}
+
+//Cargar Pedidos --------------------------------------------------------------------------------------------------------------------
+func CargarPedido(w http.ResponseWriter, r *http.Request){
+	body, _ := ioutil.ReadAll(r.Body)
+	var re Estructuras.SobrePedidos
+	json.Unmarshal(body, &re)
+	fmt.Println(re.Pedidos)
+	Agregarpedidos(re)
+}
+
+func Agregarpedidos(re Estructuras.SobrePedidos){
+
+}
 
 
+//Devolver la lista de las tiendas al front end
+
+func DevolverlistaTiendas(w http.ResponseWriter, r *http.Request){
+	var tiendas []Estructuras.TiendaAngular
+	for _, depas := range ArregloCali {
+		if !depas.Lista.IsEmpty(){
+			for _,tienda := range depas.Lista.ReturnNodes(){
+
+				tiendas = append(tiendas, Estructuras.TiendaAngular{
+					Nombre:       tienda.Nombre,
+					Descripcion:  tienda.Descripcion,
+					Contacto:     tienda.Contacto,
+					Calificacion: tienda.Calificacion,
+					Logo:         tienda.Logo,
+					Departamento: depas.Departamento,
+					IndiceNombre: depas.IndiceNombre,
+				})
+			}
+		}
+	}
+	json.NewEncoder(w).Encode(tiendas)
+}
+
+
+func DevolverlistaProductos(w http.ResponseWriter, r *http.Request)  {
+	for _, depas := range ArregloCali {
+		if depas.Calificacion+1 == tiendaseleccionada.Calificacion && depas.Departamento == tiendaseleccionada.Departamento{
+
+			if depas.Lista.Search(tiendaseleccionada.Nombre) != -1{
+				fmt.Println("Devolviendo productos de  ", tiendaseleccionada.Nombre)
+				fmt.Println(*depas.Lista.SearchNReturnM(tiendaseleccionada.Nombre).Productos.ReturnProductsOfTree())
+				json.NewEncoder(w).Encode(*depas.Lista.SearchNReturnM(tiendaseleccionada.Nombre).Productos.ReturnProductsOfTree())
+			}
+		}
+	}
+
+}
+
+//Establecer la tienda para buscar los productos
+var tiendaseleccionada Estructuras.TiendaAngular
+func TiendaActual(w http.ResponseWriter, r *http.Request)  {
+	var tiendasec Estructuras.TiendaAngular
+	tiendaseleccionada = tiendasec
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &tiendaseleccionada)
+	//print("se entrro")
+	fmt.Println(tiendaseleccionada)
+}
 
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 
-func crearMatriz3D( indice, departamento, calificacion int) [][][]ListaDobleEnlazada.ListaDoble {
-	result := make([][][]ListaDobleEnlazada.ListaDoble,indice)
+
+
+func crearMatriz3D( indice, departamento, calificacion int) [][][]Estructuras.ListaDoble {
+	result := make([][][]Estructuras.ListaDoble,indice)
 	for i := 0 ; i < indice ; i++ {
-		result[i] = make([][]ListaDobleEnlazada.ListaDoble,departamento);
+		result[i] = make([][]Estructuras.ListaDoble,departamento);
 		for j := 0; j < departamento; j++ {
-			result[i][j] = make([]ListaDobleEnlazada.ListaDoble,calificacion);
+			result[i][j] = make([]Estructuras.ListaDoble,calificacion);
 			for k := 0 ; k < calificacion; k++ {
-				//result[i][j][k] = ListaDobleEnlazada.NewListaDoble()
+				//result[i][j][k] = Estructuras.NewListaDoble()
 			}
 		}
 	}
