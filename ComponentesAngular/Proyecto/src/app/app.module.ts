@@ -9,13 +9,15 @@ import { AppComponent } from './app.component';
 import { InicioComponent } from './components/inicio/inicio.component';
 import { TiendasComponent } from './components/tiendas/tiendas.component';
 import { ProductosComponent } from './components/productos/productos.component';
+import { CarroDeComprasComponent } from './components/carro-de-compras/carro-de-compras.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InicioComponent,
     TiendasComponent,
-    ProductosComponent
+    ProductosComponent,
+    CarroDeComprasComponent
   ],
   imports: [
     BrowserModule,

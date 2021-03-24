@@ -4,7 +4,7 @@ import { baseURL } from "../../apiURL/baseURL";
 import { Observable } from "rxjs";
 
 import { Producto } from "../../models/producto/producto";
-import { Tienda} from "../../models/tienda/tienda";
+import { ProductoAngular } from "../../models/producto/producto";
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +20,40 @@ export class ProductoService {
       }),
     };
   return this.http.get<Producto[]>(baseURL + 'getListaProductos', httpOptions);
+  }
+
+  getProductosCarro():Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.get<ProductoAngular[]>(baseURL + 'getListaCarrito', httpOptions);
+  }
+
+  ActualizarListaCarrito(product:Producto):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'ActualizarListaCarrito', product, httpOptions);
+  }
+
+  ActualizarInventario():Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'ActualizarInventario', httpOptions);
+  }
+  EliminarProductoCarro():Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'EliminarProductoCarro', httpOptions);
   }
 }

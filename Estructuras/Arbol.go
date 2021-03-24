@@ -110,17 +110,17 @@ func searchProductExists(producto Producto, temp *NodoArbol) bool {
 }
 
 func(avl *Avl) SumarInventario( producto Producto){
-	recorrersumando(producto, &avl.Raiz)
+	recorrersumando(producto, avl.Raiz)
 }
 
-func recorrersumando(producto Producto, temp **NodoArbol){
+func recorrersumando(producto Producto, temp *NodoArbol){
 	for temp!=nil {
-		if producto.Codigo==(*temp).producto.Codigo{
-			(*temp).producto.Cantidad = (*temp).producto.Cantidad+producto.Cantidad
-		}else if producto.Codigo>(*temp).producto.Codigo{
-			*temp = (*temp).Hder
-		}else if producto.Codigo<(*temp).producto.Codigo{
-			*temp = (*temp).Hizq
+		if producto.Codigo==(temp).producto.Codigo{
+			temp.producto.Cantidad = temp.producto.Cantidad+producto.Cantidad
+		}else if producto.Codigo>(temp).producto.Codigo{
+			temp = temp.Hder
+		}else if producto.Codigo<(temp).producto.Codigo{
+			temp = temp.Hizq
 		}
 	}
 }
@@ -138,3 +138,22 @@ func recorrerArbolParaLista(ArregloProductos *[]Producto, root *NodoArbol){
 	}
 }
 
+func(avl *Avl) VerificarDisponibilidad( producto ProductoAngular) bool{
+	return recorrerParaVerificar(producto, avl.Raiz)
+}
+
+
+func recorrerParaVerificar(producto ProductoAngular, temp *NodoArbol) bool{
+	for temp!=nil {
+		if producto.Codigo==(temp).producto.Codigo{
+			if producto.Cantidad+1<=temp.producto.Cantidad{
+				return true
+			}
+		}else if producto.Codigo>(temp).producto.Codigo{
+			temp = temp.Hder
+		}else if producto.Codigo<(temp).producto.Codigo{
+			temp = temp.Hizq
+		}
+	}
+	return false
+}

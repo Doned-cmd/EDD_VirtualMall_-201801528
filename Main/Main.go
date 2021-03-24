@@ -76,6 +76,10 @@ func request(){
 	myrouter.HandleFunc("/getTiendaActual", TiendaActual).Methods("POST")
 	myrouter.HandleFunc("/getListaProductos", DevolverlistaProductos).Methods("GET")
 	myrouter.HandleFunc("/cargarPedido", CargarPedido).Methods("POST")
+	myrouter.HandleFunc("/getListaCarrito", DevolverlistaCarrito).Methods("GET")
+	myrouter.HandleFunc("/ActualizarInventario",ActualizarInventario).Methods("POST")
+	myrouter.HandleFunc("/ActualizarListaCarrito",ActualizarListaCarro).Methods("POST")
+	myrouter.HandleFunc("/EliminarProductoCarro",EliminarProductoCarro).Methods("POST")
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -598,7 +602,7 @@ func DevolverlistaTiendas(w http.ResponseWriter, r *http.Request){
 }
 
 
-func DevolverlistaProductos(w http.ResponseWriter, r *http.Request)  {
+func DevolverlistaProductos(w http.ResponseWriter, r *http.Request){
 	for _, depas := range ArregloCali {
 		if depas.Calificacion+1 == tiendaseleccionada.Calificacion && depas.Departamento == tiendaseleccionada.Departamento{
 
@@ -609,11 +613,13 @@ func DevolverlistaProductos(w http.ResponseWriter, r *http.Request)  {
 			}
 		}
 	}
-
 }
+
+
 
 //Establecer la tienda para buscar los productos
 var tiendaseleccionada Estructuras.TiendaAngular
+
 func TiendaActual(w http.ResponseWriter, r *http.Request)  {
 	var tiendasec Estructuras.TiendaAngular
 	tiendaseleccionada = tiendasec
@@ -624,6 +630,99 @@ func TiendaActual(w http.ResponseWriter, r *http.Request)  {
 	json.Unmarshal(reqBody, &tiendaseleccionada)
 	//print("se entrro")
 	fmt.Println(tiendaseleccionada)
+}
+
+// -------------------Carrito de compras
+var ListaCarro []Estructuras.ProductoAngular
+
+func ActualizarListaCarro(w http.ResponseWriter, r *http.Request){
+	var ProductoAgregaro Estructuras.Producto
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil{
+		fmt.Println(w, "Error")
+	}
+	json.Unmarshal(reqBody,&ProductoAgregaro)
+	nuevoProduct:=Estructuras.ProductoAngular{
+		Tienda:       tiendaseleccionada.Nombre,
+		Departamento: tiendaseleccionada.Departamento,
+		Calificacion: tiendaseleccionada.Calificacion,
+		Nombre:       ProductoAgregaro.Nombre,
+		Codigo:       ProductoAgregaro.Codigo,
+		Descripcion:  ProductoAgregaro.Descripcion,
+		Precio:       ProductoAgregaro.Precio,
+		Cantidad:     1,
+		CantidadMax:  ProductoAgregaro.Cantidad,
+		Imagen:       ProductoAgregaro.Imagen,
+	}
+
+	if(noDuplicarCarro(nuevoProduct)){
+		fmt.Println("Se agrego sumo 1 al producto: " ,nuevoProduct)
+	}else{
+		ListaCarro = append(ListaCarro, nuevoProduct)
+		fmt.Println("Se agrego al carrito: " ,nuevoProduct)
+	}
+}
+func noDuplicarCarro(nuevoProduct Estructuras.ProductoAngular) bool{
+	for i,producto:= range ListaCarro{
+		if producto.Codigo == nuevoProduct.Codigo{
+			if NoExcederCantidad(ListaCarro[i]){
+			ListaCarro[i].Cantidad ++
+			}
+			return true
+		}
+	}
+	return false
+}
+func NoExcederCantidad(producto Estructuras.ProductoAngular) bool{
+	for _, depas := range ArregloCali {
+		if depas.Calificacion+1 == producto.Calificacion && depas.Departamento == producto.Departamento {
+			if depas.Lista.Search(producto.Tienda) != -1 {
+				if depas.Lista.SearchIndex(depas.Lista.Search(producto.Tienda)).GetTienda().Productos.VerificarDisponibilidad(producto){
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+
+func DevolverlistaCarrito (w http.ResponseWriter, r *http.Request) {
+	fmt.Println(ListaCarro)
+	//var ListaProductos []Estructuras.Producto
+	//for _,productocarro := range ListaCarro{
+		//NuevoPro := Estructuras.Producto{
+		//	Nombre:      productocarro.Nombre,
+		//	Codigo:      productocarro.Codigo,
+		//	Descripcion: productocarro.Descripcion,
+		//	Precio:      productocarro.Precio,
+		//	Cantidad:    productocarro.Cantidad,
+		//	Imagen:      productocarro.Imagen,
+//		}
+//		ListaProductos = append(ListaProductos, NuevoPro)
+	//}
+	json.NewEncoder(w).Encode(ListaCarro)
+}
+
+func EliminarProductoCarro(w http.ResponseWriter, r *http.Request){
+
+}
+
+
+
+
+//Actualizar los datos del servidor
+func ActualizarInventario (w http.ResponseWriter, r *http.Request) {
+
+}
+func ActualizarEStadoInventario(){
+	for _, depas := range ArregloCali {
+		if depas.Calificacion+1 == tiendaseleccionada.Calificacion && depas.Departamento == tiendaseleccionada.Departamento {
+			if depas.Lista.Search(tiendaseleccionada.Nombre) != -1 {
+				//depas.Lista.SearchIndex(depas.Lista.Search(tiendaseleccionada.Nombre)).GetTienda().Productos.SumarInventario()
+			}
+		}
+	}
 }
 
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS

@@ -38,6 +38,9 @@ type EliminarTienda struct {
 	Categoria string
 	Calificacion int
 }
+
+
+
 //Estructura para Agregar tiendas
 type Invetarios struct {
 	Tienda string `json:"Tienda"`
@@ -77,11 +80,13 @@ type Pedido struct {
 type ProductoAngular struct {
 	Tienda string
 	Departamento string
+	Calificacion int
 	Nombre string
 	Codigo int
 	Descripcion string
-	Precio int
+	Precio float32
 	Cantidad int
+	CantidadMax int
 	Imagen string
 }
 
@@ -94,3 +99,4 @@ type TiendaAngular struct {
 	Departamento string
 	IndiceNombre string
 }
+
