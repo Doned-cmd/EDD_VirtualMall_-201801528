@@ -93,7 +93,11 @@ func request(){
 	myrouter.HandleFunc("/ObtenerAnioPedido",ObtenerMesPedido).Methods("POST")
 	myrouter.HandleFunc("/DevolverMesesPedido",DevolverMesesPedido).Methods("GET")
 	myrouter.HandleFunc("/EstablecerMesBack",EstablecerMesBack).Methods("POST")
-	myrouter.HandleFunc("/DevolverDias",DevolverDias).Methods("POST")
+	myrouter.HandleFunc("/DevolverDias",DevolverDias).Methods("GET")
+
+	myrouter.HandleFunc("/EstablecerDia",EstablecerDia).Methods("POST")
+	myrouter.HandleFunc("/DevolverListaProductPedidos",DevolverListaProductPedidos).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -909,6 +913,7 @@ func EstablecerMesBack(w http.ResponseWriter, r *http.Request){
 	}
 	json.Unmarshal(reqBody, &anio)
 	messelectedAngular = anio
+	fmt.Println(messelectedAngular)
 }
 
 
@@ -919,6 +924,25 @@ func DevolverMesesPedido (w http.ResponseWriter, r *http.Request){
 
 func DevolverDias(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.Search(messelectedAngular)).GetMatriz().ReturnDias())
+}
+
+var DiaActual int
+var CategoriaAct string
+func EstablecerDia(w http.ResponseWriter, r *http.Request){
+	var anio Estructuras.ProductosPedido
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &anio)
+	fmt.Println(anio)
+	DiaActual = anio.Dia
+	CategoriaAct = anio.Categoria
+}
+
+
+func DevolverListaProductPedidos(w http.ResponseWriter, r *http.Request){
+	json.NewEncoder(w).Encode(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.Search(messelectedAngular)).GetMatriz().SearchNreturn(DiaActual,CategoriaAct).Productos.ReturnNodes())
 }
 
 func CrearDotAnio (w http.ResponseWriter, r *http.Request){

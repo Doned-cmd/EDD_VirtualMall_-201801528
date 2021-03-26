@@ -2,8 +2,8 @@
     <div class="container">
         <div class="breadcrumbs">
             <ol class="breadcrumb">
-              <li><a href="/pedidosAnio">Pedidos Por Años</a></li>
-              <li class="">Pedios por Mes</li>
+              <li><a href="/pedidosDia">Pedidos Por Dia</a></li>
+              <li class="">Lista Productos</li>
             </ol>
         </div>
         <div class="table-responsive cart_info">
@@ -18,17 +18,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr  *ngFor="let mes of ListaMeses">
+                    <tr  *ngFor="let dia of ListaProductos">                        
                         <td class="cart_product">
-                            <p> {{mes}}</p>
-                        </td>
-                        <td class="cart_price">
-                            <a class="cart_quantity_delete" (click)="EstablecerMes(mes)" href="/pedidosDia"><i class="fa fa-times"></i></a>
-                        </td>
-
-                        <td class="cart_total">
-                            <a class="cart_quantity_delete" (click)="GenerarReporteMes(mes)"  href="/assets/archivosd/Mes.dot" download><i class="fa fa-times"></i></a>
-                        </td>
+                            <p> Categoria: {{dia.Codigo}}</p>
+                        </td>                      
                     </tr>
                 </tbody>
             </table>
@@ -58,4 +51,5 @@
         </div>
     </div>
 </div>
+
 

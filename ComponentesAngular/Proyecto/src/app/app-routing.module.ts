@@ -9,6 +9,7 @@ import {CarroDeComprasComponent} from './components/carro-de-compras/carro-de-co
 import {AnioPedidoComponent} from './components/anio-pedido/anio-pedido.component'
 import {MesPedidoComponent} from './components/mes-pedido/mes-pedido.component'
 import {DiaPedidoComponent} from './components/dia-pedido/dia-pedido.component'
+import {ListaProductosComponent} from './components/lista-productos/lista-productos.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -40,8 +41,12 @@ const routes: Routes = [
   },
   {
     path: 'pedidosDia',
-    component: MesPedidoComponent,
-  }    
+    component: DiaPedidoComponent,
+  },
+  {
+    path: 'ListaPedido',
+    component: ListaProductosComponent,
+  }     
 ];
 
 @NgModule({

@@ -1,1 +1,64 @@
-<p>dia-pedido works!</p>
+<section id="cart_items">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ol class="breadcrumb">
+              <li><a href="/pedidosMes">Pedidos Por Mes</a></li>
+              <li class="">Pedios por Dia</li>
+            </ol>
+        </div>
+        <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+                <thead>
+                    <tr class="cart_menu">
+                        <td class="image">Mes</td>     
+
+                        <td class="cart_price">Dias</td>
+                        <td class="total">Generar reporte</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  *ngFor="let dia of ListaDias">
+                        <td class="cart_product">
+                            <p> Dia: {{dia.Dia}}</p>
+                        </td>
+                        <td class="cart_product">
+                            <p> Categoria: {{dia.Categoria}}</p>
+                        </td>
+                        <td class="cart_price">
+                            <a class="cart_quantity_delete" (click)="DirigirALista(dia)" href="/ListaPedido"><i class="fa fa-times"></i></a>
+                        </td>                        
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete" (click)="GenerarReporteMes(mes)"  href="/assets/archivosd/anios.dot" download><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section id="do_action">
+    <div class="container">
+        <div class="heading">
+            <h3>What would you like to do next?</h3>
+            <p>Choose if you have a discount code or reward points you want to use or would like to estimate your delivery cost.</p>
+        </div>
+        
+    </div>
+</section>
+
+
+
+<div *ngIf="mostrarMensajeError" class="row justify-content-around">
+    <div class="col-md-5">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{mensajeError}}
+            <button type="button" (click)="desactivarMensaje()" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+

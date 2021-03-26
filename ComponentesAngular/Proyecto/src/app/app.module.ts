@@ -13,6 +13,7 @@ import { CarroDeComprasComponent } from './components/carro-de-compras/carro-de-
 import { AnioPedidoComponent } from './components/anio-pedido/anio-pedido.component';
 import { MesPedidoComponent } from './components/mes-pedido/mes-pedido.component';
 import { DiaPedidoComponent } from './components/dia-pedido/dia-pedido.component';
+import { ListaProductosComponent } from './components/lista-productos/lista-productos.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { DiaPedidoComponent } from './components/dia-pedido/dia-pedido.component
     CarroDeComprasComponent,
     AnioPedidoComponent,
     MesPedidoComponent,
-    DiaPedidoComponent
+    DiaPedidoComponent,
+    ListaProductosComponent
   ],
   imports: [
     BrowserModule,

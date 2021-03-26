@@ -23,3 +23,7 @@ export class ProductosPedido{
     Dia: number
     Categoria: string
 }
+
+export class ProductoPedido{
+    Codigo: number    
+}
