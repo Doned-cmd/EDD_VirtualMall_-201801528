@@ -18,3 +18,8 @@ export class ProductoAngular{
     CantidadMax: number
     Imagen: string
 }
+
+export class ProductosPedido{
+    Dia: number
+    Categoria: string
+}

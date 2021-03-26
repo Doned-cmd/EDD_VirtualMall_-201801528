@@ -10,11 +10,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"os"
 	"os/exec"
 	"strconv"
-
 )
 
 
@@ -49,7 +50,13 @@ var ArregloCali []ArregloLinea
 
 
 func main() {
-	//var numeros []int
+	 //numeros := []int{5,4,6}
+	//for x,rec := range numeros {
+	//	if rec == 5 {
+	//		numeros = append(numeros[:x], numeros[x+1:]...)
+	//	}
+	//}
+
 	//numeros = append(numeros, 1)
 	//fmt.Print()
 	request()
@@ -80,6 +87,13 @@ func request(){
 	myrouter.HandleFunc("/ActualizarInventario",ActualizarInventario).Methods("POST")
 	myrouter.HandleFunc("/ActualizarListaCarrito",ActualizarListaCarro).Methods("POST")
 	myrouter.HandleFunc("/EliminarProductoCarro",EliminarProductoCarro).Methods("POST")
+	myrouter.HandleFunc("/DevolversumaCarro",DevolversumaCarro).Methods("GET")
+	myrouter.HandleFunc("/ActualizarCarroCambio",ActualizarCarroCambio).Methods("POST")
+	myrouter.HandleFunc("/ObtenerAniosPedido",ObtenerAniosPedido).Methods("GET")
+	myrouter.HandleFunc("/ObtenerAnioPedido",ObtenerMesPedido).Methods("POST")
+	myrouter.HandleFunc("/DevolverMesesPedido",DevolverMesesPedido).Methods("GET")
+	myrouter.HandleFunc("/EstablecerMesBack",EstablecerMesBack).Methods("POST")
+	myrouter.HandleFunc("/DevolverDias",DevolverDias).Methods("POST")
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -94,7 +108,7 @@ func homePage(w http.ResponseWriter, r *http.Request){
 
 //REGRESAR GRAFICO DE COMO ESTA LA MEMORIA
 func getArreglo(w http.ResponseWriter, r *http.Request)  {
-	var path = "D:/Escritorio/USAC/EDD/Practica 1/Grafico.dot"
+	var path = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/Grafico.dot"
 	texto:="digraph G{" + "\n"
 
 	contador := 0
@@ -499,6 +513,7 @@ func agregarAArbol(re Estructuras.SobreInventario){
 	}
 }
 func ActualizarInventarioSumando(inventario Estructuras.Invetarios ,producto Estructuras.Producto){
+	fmt.Println("sumando al producto repertido ",producto.Nombre," La cantidad: " ,producto.Cantidad)
 	for   _, cali := range ArregloCali{
 		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
 			if cali.Lista.Search(inventario.Tienda) != -1 {
@@ -523,9 +538,9 @@ func buscarProducto(inventario Estructuras.Invetarios ,producto Estructuras.Prod
 	for   _, cali := range ArregloCali{
 		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
 			if cali.Lista.Search(inventario.Tienda) != -1 {
-				if cali.Lista.SearchIndex(cali.Lista.Search(producto.Nombre)).GetTienda().Productos.Raiz == nil{
+				if cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.Raiz == nil{
 					return false
-				}else if cali.Lista.SearchIndex(cali.Lista.Search(producto.Nombre)).GetTienda().Productos.SearchProductExists(producto){
+				}else if cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.SearchProductExists(producto){
 					return true
 				} else {
 					return false
@@ -565,18 +580,61 @@ func RegresarTienda(inventario Estructuras.Invetarios) *Estructuras.Tienda{
 }
 
 //Cargar Pedidos --------------------------------------------------------------------------------------------------------------------
+
+var ArbolPedidos Estructuras.AvlPedidos
 func CargarPedido(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Estructuras.SobrePedidos
 	json.Unmarshal(body, &re)
-	fmt.Println(re.Pedidos)
+	//fmt.Println(re.Pedidos)
 	Agregarpedidos(re)
 }
 
-func Agregarpedidos(re Estructuras.SobrePedidos){
+func Agregarpedidos(res Estructuras.SobrePedidos){
+  for _,Recorrer:= range res.Pedidos {
+		fecha := strings.Split(Recorrer.Fecha, "-")
+		anio,_ := strconv.Atoi(fecha[2])
+		mes,_ := strconv.Atoi(fecha[1])
+		dia,_ := strconv.Atoi(fecha[0])
+		//fmt.Println("fecha: ", dia,mes,anio)
+		inven:= Estructuras.Invetarios{
+			Tienda:       Recorrer.Tienda,
+			Departamento: Recorrer.Departamento,
+			Calificacion: Recorrer.Calificacion,
+		}
+		//fmt.Println(inven)
+		if buscarTienda(inven){
+			if !ArbolPedidos.SearchAnioExists(anio){
+				ArbolPedidos.Insertar(anio)
+			}
+			for _,Rec:= range Recorrer.Productos {
+				pro := Estructuras.Producto{
+					Codigo: Rec.Codigo,
+				}
+				if buscarProducto(inven,pro){
+					if ArbolPedidos.ReturnAnioNode(anio).Mes.IsEmpty(){
+						ArbolPedidos.ReturnAnioNode(anio).Mes.Add(mes)
+						fmt.Println(mes)
+					}else{
+						if	ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes) != -1{
+							ArbolPedidos.ReturnAnioNode(anio).Mes.Add(mes)
+							fmt.Println(mes)
+						}
+						ArbolPedidos.ReturnAnioNode(anio).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes)).GetMatriz().Insert(dia,inven.Departamento)
+						ArbolPedidos.ReturnAnioNode(anio).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes)).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(Rec)
+						//ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().Insert(dia,inven.Departamento)
+						//ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(Rec)
+					}
+				}
+			}
 
+		}
+	}
 }
 
+func DevolverDotPedidos(w http.ResponseWriter, r *http.Request){
+
+}
 
 //Devolver la lista de las tiendas al front end
 
@@ -618,7 +676,7 @@ func DevolverlistaProductos(w http.ResponseWriter, r *http.Request){
 
 
 //Establecer la tienda para buscar los productos
-var tiendaseleccionada Estructuras.TiendaAngular
+var tiendaseleccionada Estructuras.TiendaAngular // Variable para almacenar un bufer de la tienda en la que se esta actualmente en el front end
 
 func TiendaActual(w http.ResponseWriter, r *http.Request)  {
 	var tiendasec Estructuras.TiendaAngular
@@ -633,7 +691,7 @@ func TiendaActual(w http.ResponseWriter, r *http.Request)  {
 }
 
 // -------------------Carrito de compras
-var ListaCarro []Estructuras.ProductoAngular
+var ListaCarro []Estructuras.ProductoAngular // Variable para almacenar el carrito en el servidor
 
 func ActualizarListaCarro(w http.ResponseWriter, r *http.Request){
 	var ProductoAgregaro Estructuras.Producto
@@ -688,7 +746,7 @@ func NoExcederCantidad(producto Estructuras.ProductoAngular) bool{
 
 
 func DevolverlistaCarrito (w http.ResponseWriter, r *http.Request) {
-	fmt.Println(ListaCarro)
+	//fmt.Println(ListaCarro)
 	//var ListaProductos []Estructuras.Producto
 	//for _,productocarro := range ListaCarro{
 		//NuevoPro := Estructuras.Producto{
@@ -705,26 +763,167 @@ func DevolverlistaCarrito (w http.ResponseWriter, r *http.Request) {
 }
 
 func EliminarProductoCarro(w http.ResponseWriter, r *http.Request){
+	var tiendasec Estructuras.ProductoAngular
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &tiendasec)
+ 	
+	for x,rec:= range ListaCarro {
+		if rec.Departamento == tiendasec.Departamento && rec.Calificacion == tiendasec.Calificacion && rec.Nombre == tiendasec.Nombre{
+			ListaCarro = append(ListaCarro[:x], ListaCarro[x+1:]...)
+		}
+	}
+	json.NewEncoder(w).Encode(ListaCarro)
+}
 
+func ActualizarCarroCambio(w http.ResponseWriter, r *http.Request){
+	var tiendasec []Estructuras.ProductoAngular
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &tiendasec)
+	for _,rec := range tiendasec{
+		validarpedidos(rec)
+	}
+	json.NewEncoder(w).Encode(ListaCarro)
+}
+
+func validarpedidos(tiendaselec Estructuras.ProductoAngular){
+	for x,rec := range ListaCarro {
+		if rec.Departamento == tiendaselec.Departamento && rec.Nombre == tiendaselec.Nombre && rec.Calificacion == tiendaselec.Calificacion{
+			println("Front end", tiendaselec.Nombre, tiendaselec.Cantidad)
+			ListaCarro[x].Cantidad = tiendaselec.Cantidad
+			println("Servidor: " ,rec.Nombre, rec.Cantidad)
+		}
+	}
 }
 
 
+func DevolversumaCarro (w http.ResponseWriter, r *http.Request){
+	json.NewEncoder(w).Encode(SumaCarro())
+}
 
+func SumaCarro() float32 {
+	var suma float32 = 0
+	for _, rec := range ListaCarro{
+		suma = suma +  rec.Precio*float32(rec.Cantidad)
+	}
+	return suma
+}
 
 //Actualizar los datos del servidor
 func ActualizarInventario (w http.ResponseWriter, r *http.Request) {
-
+	// var fecha
+	for _, rec :=  range ListaCarro{
+		ActualizarEstadoInventario(rec)
+		GenerarPedido(rec)
+	}
 }
-func ActualizarEStadoInventario(){
+
+func ActualizarEstadoInventario(rec Estructuras.ProductoAngular){
 	for _, depas := range ArregloCali {
-		if depas.Calificacion+1 == tiendaseleccionada.Calificacion && depas.Departamento == tiendaseleccionada.Departamento {
-			if depas.Lista.Search(tiendaseleccionada.Nombre) != -1 {
-				//depas.Lista.SearchIndex(depas.Lista.Search(tiendaseleccionada.Nombre)).GetTienda().Productos.SumarInventario()
+		if depas.Calificacion+1 == rec.Calificacion && rec.Departamento == rec.Departamento {
+			if depas.Lista.Search(rec.Tienda) != -1 {
+				producto := Estructuras.Producto{
+					Nombre:      rec.Nombre,
+					Codigo:      rec.Codigo,
+					Descripcion: rec.Descripcion,
+					Precio:      rec.Precio,
+					Cantidad:    -rec.Cantidad,
+					Imagen:      rec.Imagen,
+				}
+				depas.Lista.SearchIndex(depas.Lista.Search(rec.Tienda)).GetTienda().Productos.SumarInventario(producto)
+			}
+		}
+	}
+	var ReiniciarLista []Estructuras.ProductoAngular
+	ListaCarro = ReiniciarLista
+}
+func GenerarPedido(rec Estructuras.ProductoAngular){
+	today := time.Now()
+	dia := today.Day()
+	var mes int
+	anio := today.Year()
+	if today.Month().String() == "March"{
+		mes = 3
+	}else if today.Month().String() == "April"{
+		mes = 4
+	}
+	inven:= Estructuras.Invetarios{
+		Tienda:       rec.Tienda,
+		Departamento: rec.Departamento,
+		Calificacion: rec.Calificacion,
+	}
+	if buscarTienda(inven) {
+		if !ArbolPedidos.SearchAnioExists(anio) {
+			ArbolPedidos.Insertar(anio)
+		}
+
+		pro := Estructuras.Producto{
+			Codigo: rec.Codigo,
+		}
+		if buscarProducto(inven, pro) {
+			if ArbolPedidos.ReturnAnioNode(anio).Mes.IsEmpty() {
+				ArbolPedidos.ReturnAnioNode(anio).Mes.Add(mes)
+			} else {
+				if ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes) != -1 {
+					ArbolPedidos.ReturnAnioNode(anio).Mes.Add(mes)
+				}
+				ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().Insert(dia, inven.Departamento)
+				nuevo := Estructuras.Productos{Codigo: rec.Codigo}
+				ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(nuevo)
 			}
 		}
 	}
 }
 
+// Devolver datos para la intefaz
+
+func ObtenerAniosPedido(w http.ResponseWriter, r *http.Request){
+	fmt.Println("devolviendo años ")
+	//ListaAnios := *ArbolPedidos.ReturnProductsOfTree()
+	fmt.Println(*ArbolPedidos.ReturnProductsOfTree())
+	json.NewEncoder(w).Encode(*ArbolPedidos.ReturnProductsOfTree())
+}
+
+
+var anioselectedAngular int
+func ObtenerMesPedido(w http.ResponseWriter, r *http.Request){
+	var anio int
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &anio)
+	anioselectedAngular = anio
+}
+var messelectedAngular int
+func EstablecerMesBack(w http.ResponseWriter, r *http.Request){
+	var anio int
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &anio)
+	messelectedAngular = anio
+}
+
+
+
+func DevolverMesesPedido (w http.ResponseWriter, r *http.Request){
+	json.NewEncoder(w).Encode(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.ReturnMeses())
+}
+
+func DevolverDias(w http.ResponseWriter, r *http.Request){
+	json.NewEncoder(w).Encode(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anioselectedAngular).Mes.Search(messelectedAngular)).GetMatriz().ReturnDias())
+}
+
+func CrearDotAnio (w http.ResponseWriter, r *http.Request){
+	//var path = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/anios.dot"
+}
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 

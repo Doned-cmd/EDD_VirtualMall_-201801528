@@ -117,6 +117,7 @@ func recorrersumando(producto Producto, temp *NodoArbol){
 	for temp!=nil {
 		if producto.Codigo==(temp).producto.Codigo{
 			temp.producto.Cantidad = temp.producto.Cantidad+producto.Cantidad
+			break
 		}else if producto.Codigo>(temp).producto.Codigo{
 			temp = temp.Hder
 		}else if producto.Codigo<(temp).producto.Codigo{

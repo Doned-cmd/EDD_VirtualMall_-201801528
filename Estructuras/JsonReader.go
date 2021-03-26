@@ -39,7 +39,16 @@ type EliminarTienda struct {
 	Calificacion int
 }
 
-
+type Pedidos struct {
+	Fecha string `json:"Fecha"`
+	Tienda string `json:"Tienda"`
+	Departamento string `json:"Departamento"`
+	Calificacion int `json:"Calificacion"`
+	Productos []Productos `json:"Productos"`
+}
+type Productos struct {
+	Codigo int `json:"Codigo"`
+}
 
 //Estructura para Agregar tiendas
 type Invetarios struct {
@@ -63,15 +72,7 @@ type SobreInventario struct {
 
 //Estructura para los pedidos
 type SobrePedidos struct {
-	Pedidos []Pedido
-}
-
-type Pedido struct {
-	Fecha string `json:"Fecha"`
-	Tienda string `json:"Tienda"`
-	Departamento string `json:"Departamento"`
-	Calificacion int `json:"Calificacion"`
-	Productos[] Producto  `json:"Productos"`
+	Pedidos []Pedidos
 }
 
 
@@ -99,4 +100,14 @@ type TiendaAngular struct {
 	Departamento string
 	IndiceNombre string
 }
+
+type ProductosPedido struct {
+	Dia int
+	Categoria string
+}
+
+
+
+//EStructura para guardar los pedidos en el arbol
+
 

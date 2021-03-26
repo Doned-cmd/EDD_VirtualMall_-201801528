@@ -10,6 +10,9 @@ import { InicioComponent } from './components/inicio/inicio.component';
 import { TiendasComponent } from './components/tiendas/tiendas.component';
 import { ProductosComponent } from './components/productos/productos.component';
 import { CarroDeComprasComponent } from './components/carro-de-compras/carro-de-compras.component';
+import { AnioPedidoComponent } from './components/anio-pedido/anio-pedido.component';
+import { MesPedidoComponent } from './components/mes-pedido/mes-pedido.component';
+import { DiaPedidoComponent } from './components/dia-pedido/dia-pedido.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { CarroDeComprasComponent } from './components/carro-de-compras/carro-de-
     InicioComponent,
     TiendasComponent,
     ProductosComponent,
-    CarroDeComprasComponent
+    CarroDeComprasComponent,
+    AnioPedidoComponent,
+    MesPedidoComponent,
+    DiaPedidoComponent
   ],
   imports: [
     BrowserModule,

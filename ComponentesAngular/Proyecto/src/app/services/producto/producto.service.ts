@@ -40,6 +40,15 @@ export class ProductoService {
   return this.http.post<any>(baseURL + 'ActualizarListaCarrito', product, httpOptions);
   }
 
+  ActualizarCarroCambio(producto:ProductoAngular[]):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<number>(baseURL + 'ActualizarCarroCambio', producto, httpOptions);
+  }
+
   ActualizarInventario():Observable<any>{
     const httpOptions = {
       headers: new HttpHeaders({
@@ -48,12 +57,23 @@ export class ProductoService {
     };
   return this.http.post<any>(baseURL + 'ActualizarInventario', httpOptions);
   }
-  EliminarProductoCarro():Observable<any>{
+
+  EliminarProductoCarro(producto:ProductoAngular):Observable<any>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       }),
     };
-  return this.http.post<any>(baseURL + 'EliminarProductoCarro', httpOptions);
+  return this.http.post<ProductoAngular[]>(baseURL + 'EliminarProductoCarro', producto,httpOptions);
   }
+
+  ObtenerSumaCarro():Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.get<number>(baseURL + 'DevolversumaCarro', httpOptions);
+  }
+
 }
