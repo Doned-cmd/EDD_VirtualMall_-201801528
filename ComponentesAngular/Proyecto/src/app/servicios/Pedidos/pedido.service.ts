@@ -85,5 +85,15 @@ export class PedidoService {
     };
   return this.http.get<ProductoPedido[]>(baseURL + 'DevolverListaProductPedidos', httpOptions);
   }
+
+  CargarPedidos(tiendaActual: String):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'DevolverListaProductPedidos', tiendaActual , httpOptions);
+  }
+  
 }
 

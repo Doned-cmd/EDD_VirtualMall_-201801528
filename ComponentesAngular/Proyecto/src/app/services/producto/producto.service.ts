@@ -76,4 +76,12 @@ export class ProductoService {
   return this.http.get<number>(baseURL + 'DevolversumaCarro', httpOptions);
   }
 
+  CargarInventario(tiendaActual: String):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'DevolverListaProductPedidos', tiendaActual, httpOptions);
+  }
 }

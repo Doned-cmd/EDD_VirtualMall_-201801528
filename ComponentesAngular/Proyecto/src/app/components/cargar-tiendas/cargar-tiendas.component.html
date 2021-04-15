@@ -1,0 +1,9 @@
+<form (ngSubmit)="enviar()" autocomplete="off" class="container">
+    <label for="">Carga el archivo json con la información</label><hr><br>
+    <input accept=".json" id="archivo" type="file" (change)="onFileChange($event)">
+    
+    <input type="submit" value="Enviar">
+</form>
+<!--<div *ngIf="error" class="alert alert-danger col-8">
+    No se ha podido agregar la información
+</div>-->

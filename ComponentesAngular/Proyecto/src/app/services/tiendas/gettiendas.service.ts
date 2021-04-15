@@ -29,4 +29,13 @@ export class GettiendasService {
     };
     return this.http.post<Tienda>(baseURL + 'getTiendaActual', tiendaActual, httpOptions);
   }
+
+  CargarTienda(tiendaActual: String):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    };
+    return this.http.post<any>(baseURL + 'getTiendaActual', tiendaActual, httpOptions);
+  }
 }

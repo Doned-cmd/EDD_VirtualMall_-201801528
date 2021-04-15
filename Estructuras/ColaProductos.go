@@ -171,4 +171,3 @@ func (d *ColaPedidos) ReturnNodes() []Productos {
 	}
 	return ArregloTiendas
 }
-

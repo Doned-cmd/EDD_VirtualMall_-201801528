@@ -10,6 +10,9 @@ import {AnioPedidoComponent} from './components/anio-pedido/anio-pedido.componen
 import {MesPedidoComponent} from './components/mes-pedido/mes-pedido.component'
 import {DiaPedidoComponent} from './components/dia-pedido/dia-pedido.component'
 import {ListaProductosComponent} from './components/lista-productos/lista-productos.component'
+import {CargarInventarioComponent} from './components/cargar-inventario/cargar-inventario.component'
+import {CargarPedidosComponent} from './components/cargar-pedidos/cargar-pedidos.component'
+import {CargarTiendasComponent} from './components/cargar-tiendas/cargar-tiendas.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -18,6 +21,18 @@ const routes: Routes = [
   {
     path: '',
     component: InicioComponent,
+  },
+  {
+    path: 'CargarInventario',
+    component: CargarInventarioComponent,
+  },
+  {
+    path: 'CargarPedidos',
+    component: CargarPedidosComponent,
+  },
+  {
+    path: 'CargarTiendas',
+    component: CargarTiendasComponent,
   },
   {
     path: 'vertiendas',

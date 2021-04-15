@@ -49,8 +49,30 @@ var matricita []Indice
 var ArregloCali []ArregloLinea
 
 
+var ArbolUsuarios *Estructuras.BTree
+
 func main() {
-	 //numeros := []int{5,4,6}
+	ArbolUsuarios = Estructuras.NewBTree()
+
+	UsuarioAdmin := Estructuras.Usuario{
+		Dpi:      1,
+		Nombre:   "Hola",
+		Correo:   "Bryan@gmail.com",
+		Password: "123",
+		Cuenta:   "Admin",
+	}
+
+
+
+	ArbolUsuarios.Insert(UsuarioAdmin)
+
+
+
+	//ArbolUsuarios.Insert(Nuevo4)
+
+	//ArbolUsuarios.ImprimirArbol()
+
+	//numeros := []int{5,4,6}
 	//for x,rec := range numeros {
 	//	if rec == 5 {
 	//		numeros = append(numeros[:x], numeros[x+1:]...)
@@ -60,6 +82,8 @@ func main() {
 	//numeros = append(numeros, 1)
 	//fmt.Print()
 	request()
+
+
 	//print(Regresar(3))
 	//Regresar(&(numeros))
 	//fmt.Print(numeros)
@@ -98,6 +122,8 @@ func request(){
 	myrouter.HandleFunc("/EstablecerDia",EstablecerDia).Methods("POST")
 	myrouter.HandleFunc("/DevolverListaProductPedidos",DevolverListaProductPedidos).Methods("GET")
 
+
+	myrouter.HandleFunc("/VerificarCuenta",VerificarCuenta).Methods("POST")
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -947,6 +973,42 @@ func DevolverListaProductPedidos(w http.ResponseWriter, r *http.Request){
 
 func CrearDotAnio (w http.ResponseWriter, r *http.Request){
 	//var path = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/anios.dot"
+}
+
+//Cuentas
+var Cuenta Estructuras.Usuario
+
+func VerificarCuenta (w http.ResponseWriter, r *http.Request) {
+	var UsuarioVer Estructuras.UsuarioJson
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &UsuarioVer)
+	fmt.Println(UsuarioVer)
+
+	UsuarioN := Estructuras.Usuario{
+		Dpi:      0,
+		Nombre:   "",
+		Correo:   UsuarioVer.Password,
+		Password: UsuarioVer.Password,
+		Cuenta:   "",
+	}
+	if ArbolUsuarios.SearchCorreo(UsuarioN) != nil {
+
+		selected := ArbolUsuarios.SearchCorreo(UsuarioN)
+
+		UsuarioN = Estructuras.Usuario{
+			Dpi:      selected.Dpi,
+			Nombre:   selected.Nombre,
+			Correo:   selected.Correo,
+			Password: selected.Password,
+			Cuenta:   selected.Cuenta,
+		}
+		json.NewEncoder(w).Encode(true)
+	}else{
+		json.NewEncoder(w).Encode(false)
+	}
 }
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa

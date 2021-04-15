@@ -110,4 +110,18 @@ type ProductosPedido struct {
 
 //EStructura para guardar los pedidos en el arbol
 
+//Estructura para guardar usuarios
 
+type Usuario struct {
+	Dpi int `json:"Dpi"`
+	Nombre string `json:"Nombre"`
+	Correo string `json:"Correo"`
+	Password string `json:"Password"`
+	Cuenta string `json:"Cuenta"`
+}
+//Estructura para recibir usuarios
+
+type UsuarioJson struct {
+	Correo string `json:"Correo"`
+	Password string `json:"Password"`
+}

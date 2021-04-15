@@ -14,6 +14,10 @@ import { AnioPedidoComponent } from './components/anio-pedido/anio-pedido.compon
 import { MesPedidoComponent } from './components/mes-pedido/mes-pedido.component';
 import { DiaPedidoComponent } from './components/dia-pedido/dia-pedido.component';
 import { ListaProductosComponent } from './components/lista-productos/lista-productos.component';
+import { LoginComponent } from './components/login/login.component';
+import { CargarTiendasComponent } from './components/cargar-tiendas/cargar-tiendas.component';
+import { CargarInventarioComponent } from './components/cargar-inventario/cargar-inventario.component';
+import { CargarPedidosComponent } from './components/cargar-pedidos/cargar-pedidos.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +29,11 @@ import { ListaProductosComponent } from './components/lista-productos/lista-prod
     AnioPedidoComponent,
     MesPedidoComponent,
     DiaPedidoComponent,
-    ListaProductosComponent
+    ListaProductosComponent,
+    LoginComponent,
+    CargarTiendasComponent,
+    CargarInventarioComponent,
+    CargarPedidosComponent
   ],
   imports: [
     BrowserModule,
