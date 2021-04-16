@@ -1,6 +1,9 @@
 package Estructuras
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type NodoBTree struct {
 	keys []*Usuario
@@ -19,7 +22,7 @@ type BTree struct {
 func NewBTree() *BTree{
 	return &BTree{
 		root: nil,
-		t:    5,
+		t:    3,
 	}
 }
 func (t *BTree) Traverse(){
@@ -109,11 +112,21 @@ func (t *BTree) Insert(data Usuario) {
 
 func (T *BTree) ImprimirArbol(){
 	if T.root != nil {
+
 		imprimirArbol(*T.root)
 	}
 }
 
+func (T *BTree)Gragicar() string{
+
+	texto := "digraph grafo { \n\tnode[shape=\"record\"]\n"
+	texto += T.root.generarGraphviz()
+	texto += "\n}"
+	return texto
+}
+
 func  imprimirArbol( Temp NodoBTree){
+	fmt.Println("EL numero del nodo es ",Temp.n)
 	if Temp.leaf{
 		for i:=0; i< Temp.n;i++{
 			fmt.Println(Temp.keys[i].Dpi)
@@ -122,11 +135,36 @@ func  imprimirArbol( Temp NodoBTree){
 	}else{
 		for i := 0;i < Temp.n;i++ {
 			if !Temp.leaf{
+				fmt.Println(Temp.keys[i].Dpi)
 				imprimirArbol(*Temp.children[i])
 			}
 		}
 	}
 }
+
+
+
+
+func (B *NodoBTree) generarGraphviz() string {
+	fmt.Println("Otro nodo")
+	nombre := strconv.Itoa(B.keys[0].Dpi)
+	texto := "nodo" + nombre + "[label = \""
+
+	for _, llave := range B.keys {
+		if llave != nil {
+			texto += llave.toDOT()+"|"
+		}
+	}
+	texto+= "\"];\"\n"
+	for _, hijo := range B.children {
+		if hijo != nil {
+			texto += hijo.generarGraphviz()
+			texto += nombre + "-> " + "node" +  strconv.Itoa(hijo.keys[0].Dpi)
+		}
+	}
+	return texto
+}
+
 
 func (T *BTree) SearchCorreo(usuario Usuario) *Usuario{
 	if T.root != nil {

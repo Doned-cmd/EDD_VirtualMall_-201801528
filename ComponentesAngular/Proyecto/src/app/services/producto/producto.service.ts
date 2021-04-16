@@ -82,6 +82,7 @@ export class ProductoService {
         'Content-Type': 'application/json'
       }),
     };
-  return this.http.post<any>(baseURL + 'DevolverListaProductPedidos', tiendaActual, httpOptions);
+  return this.http.post<any>(baseURL + 'cargarInventario', tiendaActual, httpOptions);
   }
+  
 }

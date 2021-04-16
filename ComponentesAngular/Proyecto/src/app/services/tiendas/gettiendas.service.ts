@@ -36,6 +36,6 @@ export class GettiendasService {
         'Content-Type': 'application/json',
       }),
     };
-    return this.http.post<any>(baseURL + 'getTiendaActual', tiendaActual, httpOptions);
+    return this.http.post<any>(baseURL + 'cargartienda', tiendaActual, httpOptions);
   }
 }

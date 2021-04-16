@@ -5,13 +5,13 @@
                 <div class="login-form"><!--login form-->
                     <h2>Login to your account</h2>
                     <form action="#">
-                        <input type="email" placeholder="Email Address" #EmailLog/>
-                        <input type="password" placeholder="Password" #PasswordLog/>
+                        <input type="number" placeholder="Dpi"  [(ngModel)] = "Dpi" name="DPi"/>
+                        <input type="password" placeholder="Password" [(ngModel)] = "Password" name="Password" />
                         <span>
-                            <input type="checkbox" class="checkbox"> 
-                            Keep me signed in
+                           <!--<input type="checkbox" class="checkbox"> 
+                            Keep me signed in-->
                         </span>
-                        <button type="submit" class="btn btn-default">Login</button>
+                        <button type="submit" class="btn btn-default" (click)="Verificar()">Login</button>
                     </form>
                 </div><!--/login form-->
             </div>

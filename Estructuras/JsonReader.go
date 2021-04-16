@@ -1,7 +1,7 @@
 package Estructuras
 
 import(
-
+	"strconv"
 )
 
 //Conseguir datos Json
@@ -119,9 +119,18 @@ type Usuario struct {
 	Password string `json:"Password"`
 	Cuenta string `json:"Cuenta"`
 }
+
+type MostrarUsuario struct {
+	Buleano bool
+	Usuario Usuario
+}
+
+func (u Usuario) toDOT() string {
+	return strconv.Itoa(u.Dpi) + "\\n" + u.Nombre + "\\n" + u.Correo + "\\n" + u.Password + "\\n" + u.Cuenta
+}
 //Estructura para recibir usuarios
 
 type UsuarioJson struct {
-	Correo string `json:"Correo"`
+	Dpi int `json:"Dpi"`
 	Password string `json:"Password"`
 }

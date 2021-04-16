@@ -13,6 +13,7 @@ import {ListaProductosComponent} from './components/lista-productos/lista-produc
 import {CargarInventarioComponent} from './components/cargar-inventario/cargar-inventario.component'
 import {CargarPedidosComponent} from './components/cargar-pedidos/cargar-pedidos.component'
 import {CargarTiendasComponent} from './components/cargar-tiendas/cargar-tiendas.component'
+import {LoginComponent} from './components/login/login.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -25,6 +26,10 @@ const routes: Routes = [
   {
     path: 'CargarInventario',
     component: CargarInventarioComponent,
+  },
+  {
+    path: 'Login',
+    component: LoginComponent,
   },
   {
     path: 'CargarPedidos',

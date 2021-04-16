@@ -92,7 +92,7 @@ export class PedidoService {
         'Content-Type': 'application/json'
       }),
     };
-  return this.http.post<any>(baseURL + 'DevolverListaProductPedidos', tiendaActual , httpOptions);
+  return this.http.post<any>(baseURL + 'cargarPedido', tiendaActual , httpOptions);
   }
   
 }

@@ -59,7 +59,7 @@
                 <div class="col-md-8 clearfix">
                     <div class="shop-menu clearfix pull-right">
                         <ul class="nav navbar-nav">
-                            <li><a href="/"><i class="fa fa-user"></i> Account</a></li>
+                            <li><a href="/Login"><i class="fa fa-user"></i> Account</a></li>
                             <li><a href="/"><i class="fa fa-star"></i> Wishlist</a></li>
                             <li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
                             <li><a href="/carro"><i class="fa fa-shopping-cart"></i> Cart</a></li>
@@ -67,6 +67,7 @@
                         </ul>
                     </div>
                 </div>
+
             </div>
         </div>
     </div><!--/header-middle-->
@@ -90,11 +91,20 @@
                                 <ul role="menu" class="sub-menu">
                                     <li><a href="/vertiendas">Tiendas</a></li>                                    
                                     <li><a href="/productos">Productos</a></li> 
-                                    <li><a href="/carro">Carro</a></li> 
-                                    <li><a href="/pedidosAnio">Pedidos</a></li> 
+                                    <li><a href="/carro">Carro</a></li>                                     
                                 </ul>
                             </li>                             
-                        </ul>
+                        </ul>                      
+                        <ul class="nav navbar-nav collapse navbar-collapse" *ngIf=MostrarAdmin>                            
+                            <li class="dropdown"><a>Admin<i class="fa fa-angle-down"></i></a>
+                                <ul role="menu" class="sub-menu">
+                                    <li><a href="/CargarTiendas">Cargar Tiendas</a></li>
+                                    <li><a href="/CargarInventario">Cargar Productos</a></li>
+                                    <li><a href="/CargarPedidos">Cargar Pedidos</a></li>
+                                    <li><a href="/pedidosAnio">Pedidos</a></li>
+                                </ul>
+                            </li>
+                        </ul>                        
                     </div>
                 </div>
                 <div class="col-sm-3">
