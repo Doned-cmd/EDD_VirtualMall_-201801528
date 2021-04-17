@@ -4,7 +4,7 @@ import { baseURL } from "../../apiURL/baseURL";
 
 import { Observable } from "rxjs";
 
-import { Usuario,MostrarUsuario } from "../../models/Usuario/usuario";
+import { Usuario,MostrarUsuario, UsuarioLogeado } from "../../models/Usuario/usuario";
 
 
 @Injectable({
@@ -13,6 +13,15 @@ import { Usuario,MostrarUsuario } from "../../models/Usuario/usuario";
 export class CuentasService {
 
   constructor(private http: HttpClient) { }
+
+  CargarUsuarios(tiendaActual: String):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'CargarUsuarios', tiendaActual, httpOptions);
+  }
 
   CompararDatos(Comparable: Usuario):Observable<any>{
     const httpOptions = {
@@ -23,13 +32,31 @@ export class CuentasService {
   return this.http.post<boolean>(baseURL + 'VerificarCuenta', Comparable, httpOptions);
   }
 
+  RegistrarUsuario(Comparable: UsuarioLogeado):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<boolean>(baseURL + 'RegistrarUsuario', Comparable, httpOptions);
+  }
+
+  EliminarCuenta(Comparable:Usuario):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'EliminarUsuario', Comparable, httpOptions);
+  }
+
   VerificarSiAdmin():Observable<any>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       }),
     };
-  return this.http.post<boolean>(baseURL + 'VerificarSiAdmin', httpOptions);
+  return this.http.post<any>(baseURL + 'VerificarSiAdmin', httpOptions);
   }
 
   RegresarCuentaLoged():Observable<any>{
@@ -41,5 +68,13 @@ export class CuentasService {
   return this.http.get<MostrarUsuario>(baseURL + 'DevolverCuenta', httpOptions);
   }
 
-  
+  GenerarReporte(llave:string):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.post<any>(baseURL + 'GenerarReporte', llave, httpOptions);
+  }
+
 }

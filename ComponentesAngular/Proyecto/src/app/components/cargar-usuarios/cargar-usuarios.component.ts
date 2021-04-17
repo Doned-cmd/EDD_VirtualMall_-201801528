@@ -1,12 +1,13 @@
 import { Component, EventEmitter, OnInit, Output, Input} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { GettiendasService } from '../../services/tiendas/gettiendas.service';
+import { CuentasService } from '../../services/Cuentas/cuentas.service';
+
 @Component({
-  selector: 'app-cargar-tiendas',
-  templateUrl: './cargar-tiendas.component.html',
-  styleUrls: ['./cargar-tiendas.component.css']
+  selector: 'app-cargar-usuarios',
+  templateUrl: './cargar-usuarios.component.html',
+  styleUrls: ['./cargar-usuarios.component.css']
 })
-export class CargarTiendasComponent implements OnInit {
+export class CargarUsuariosComponent implements OnInit {
 
   @Input() opcion : string = ""
   @Output() onEnter : EventEmitter<string> = new EventEmitter();
@@ -30,7 +31,7 @@ export class CargarTiendasComponent implements OnInit {
   }
     //Envia el archivo al padre
   enviar(){
-    this.tiendasService.CargarTienda(this.termino).subscribe(
+    this.tiendasService.CargarUsuarios(this.termino).subscribe(
       resp =>{
         //console.log(resp.toString);
       }, err => {
@@ -41,8 +42,8 @@ export class CargarTiendasComponent implements OnInit {
     //this.onEnter.emit(this.termino);
   }
 
-  constructor(private tiendasService : GettiendasService) { }
+  constructor(private tiendasService : CuentasService) { }
   
-  ngOnInit(): void {
+  ngOnInit(): void {    
   }
 }

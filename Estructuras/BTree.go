@@ -2,6 +2,10 @@ package Estructuras
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"os/exec"
 	"strconv"
 )
 
@@ -19,10 +23,10 @@ type BTree struct {
 }
 //metodos de la clase Btree
 
-func NewBTree() *BTree{
+func NewBTree(t int) *BTree{
 	return &BTree{
 		root: nil,
-		t:    3,
+		t:    t,
 	}
 }
 func (t *BTree) Traverse(){
@@ -117,13 +121,7 @@ func (T *BTree) ImprimirArbol(){
 	}
 }
 
-func (T *BTree)Gragicar() string{
 
-	texto := "digraph grafo { \n\tnode[shape=\"record\"]\n"
-	texto += T.root.generarGraphviz()
-	texto += "\n}"
-	return texto
-}
 
 func  imprimirArbol( Temp NodoBTree){
 	fmt.Println("EL numero del nodo es ",Temp.n)
@@ -142,28 +140,87 @@ func  imprimirArbol( Temp NodoBTree){
 	}
 }
 
+func (T *BTree)Gragicar(encriptar int) string{
+
+	texto := "digraph grafo { \n\tnode[shape=\"record\"]\n"
+	texto += T.GetRoot().generarTextoGraphviz(encriptar)
+	texto += "\n}"
+	direccion := ""
+	direccionImg := ""
+	if encriptar == 0{
+		direccion ="D:/Escritorio/USAC/EDD/Proyecto/Reportes/ReporteUsuarios.dot"
+		direccionImg = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/ReporteUsuarios.svg"
+	}else if encriptar == 1{
+		direccion ="D:/Escritorio/USAC/EDD/Proyecto/Reportes/ReporteUsuariosCifrado.dot"
+		direccionImg = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/ReporteUsuariosCifrado.svg"
+	}else {
+		direccion ="D:/Escritorio/USAC/EDD/Proyecto/Reportes/ReporteUsuariosCifSens.dot"
+		direccionImg = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/archivosdReporteUsuariosCifSens.svg"
+	}
+	f, err := os.Create(direccion)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	_, err2 := f.WriteString(texto)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	fmt.Println("$$$ Archivo dot escrito.")
+
+
+	path,_ := exec.LookPath("dot")
+	cmd,_ := exec.Command(path, "-Tsvg", direccion).Output()
+	mode := int(0777)
+	ioutil.WriteFile(direccionImg, cmd, os.FileMode(mode))
+
+	return texto
+}
 
 
 
-func (B *NodoBTree) generarGraphviz() string {
-	fmt.Println("Otro nodo")
-	nombre := strconv.Itoa(B.keys[0].Dpi)
-	texto := "nodo" + nombre + "[label = \""
 
-	for _, llave := range B.keys {
+
+
+//----------------------------------------
+
+
+func (B *NodoBTree) generarTextoGraphviz(encriptar int) string {
+	nombre := "nodo" + strconv.Itoa(B.keys[0].Dpi)
+	texto :=  nombre + "[label = \""
+
+	for i, llave := range B.keys {
 		if llave != nil {
-			texto += llave.toDOT()+"|"
+			if i < B.n-1 {
+				if encriptar == 0{
+					texto += llave.toString()+"|"
+				}else if encriptar == 1{
+					texto += llave.toStringEncrip()+"|"
+				}else{
+					texto += llave.toStringEncripSensible()+"|"
+				}
+			} else {
+				if encriptar == 0{
+					texto += llave.toString()
+				}else if encriptar == 1{
+					texto += llave.toStringEncrip()
+				}else{
+					texto += llave.toStringEncripSensible()
+				}
+			}
 		}
 	}
-	texto+= "\"];\"\n"
+	texto+= "\"];\n"
 	for _, hijo := range B.children {
 		if hijo != nil {
-			texto += hijo.generarGraphviz()
-			texto += nombre + "-> " + "node" +  strconv.Itoa(hijo.keys[0].Dpi)
+			texto += hijo.generarTextoGraphviz(encriptar)
+			texto += "\t" +  nombre + "-> " + "nodo" +  strconv.Itoa(hijo.keys[0].Dpi) + "\n"
 		}
 	}
 	return texto
 }
+
+
 
 
 func (T *BTree) SearchCorreo(usuario Usuario) *Usuario{

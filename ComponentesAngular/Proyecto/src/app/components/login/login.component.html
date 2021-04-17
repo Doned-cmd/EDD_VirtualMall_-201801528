@@ -1,11 +1,11 @@
 <section id="form"><!--form-->
     <div class="container">
         <div class="row">
-            <div class="col-sm-4 col-sm-offset-1">
+            <div class="col-sm-3 col-sm-offset-1">
                 <div class="login-form"><!--login form-->
                     <h2>Login to your account</h2>
                     <form action="#">
-                        <input type="number" placeholder="Dpi"  [(ngModel)] = "Dpi" name="DPi"/>
+                        <input type="number" placeholder="Dpi"  [(ngModel)] = "Dpi" name="Dpi"/>
                         <input type="password" placeholder="Password" [(ngModel)] = "Password" name="Password" />
                         <span>
                            <!--<input type="checkbox" class="checkbox"> 
@@ -18,14 +18,28 @@
             <div class="col-sm-1">
                 <h2 class="or">OR</h2>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <div class="signup-form"><!--sign up form-->
                     <h2>New User Signup!</h2>
                     <form action="#">
-                        <input type="text" placeholder="Name"/>
-                        <input type="email" placeholder="Email Address"/>
-                        <input type="password" placeholder="Password"/>
-                        <button type="submit" class="btn btn-default">Signup</button>
+                        <input type="text" placeholder="Nombre" [(ngModel)] = "NombreReg" name="NombreReg"/>
+                        <input type="number" placeholder="Dpi" [(ngModel)] = "DpiReg" name="DpiReg"/>
+                        <input type="email" placeholder="Correo" [(ngModel)] = "CorreoReg" name="CorreoReg"/>
+                        <input type="password" placeholder="Contraseña" [(ngModel)] = "PasswordReg" name="PasswordReg"/>
+                        <button type="submit" class="btn btn-default" (click)="Registrar()">Signup</button>
+                    </form>
+                </div><!--/sign up form-->
+            </div>
+            <div class="col-sm-1" *ngIf="mostrar">
+                <h2 class="or">OR</h2>
+            </div>
+            <div class="col-sm-3" *ngIf="mostrar">
+                <div class="login-form"><!--sign up form-->
+                    <h2>Elimine su cuenta {{Usero.Usuario.Nombre}}</h2>
+                    <form action="#">
+                        <input type="password" placeholder="Ingrese contraseña para confirmar" [(ngModel)] = "PasswordDel" name="PasswordDel"/>
+                        <!--<p>{{PasswordDel}}</p>-->
+                        <button type="submit" class="btn btn-default" (click)="Eliminar()">Eliminar Cuenta</button>
                     </form>
                 </div><!--/sign up form-->
             </div>

@@ -2,8 +2,13 @@ package Estructuras
 
 import(
 	"strconv"
+	"../EncriptacionFernet"
 )
+var LLaveEncriptado = "AAAAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5A="
 
+func SetLLaveEncriptado(Key string){
+	LLaveEncriptado = Key
+}
 //Conseguir datos Json
 type Tienda struct {
 	Nombre string `json:"Nombre"`
@@ -125,8 +130,14 @@ type MostrarUsuario struct {
 	Usuario Usuario
 }
 
-func (u Usuario) toDOT() string {
+func (u Usuario) toString() string {
 	return strconv.Itoa(u.Dpi) + "\\n" + u.Nombre + "\\n" + u.Correo + "\\n" + u.Password + "\\n" + u.Cuenta
+}
+func (u Usuario) toStringEncrip() string {
+	return EncriptacionFernet.EncriptarString(strconv.Itoa(u.Dpi),LLaveEncriptado) + "\\n" + EncriptacionFernet.EncriptarString(u.Nombre,LLaveEncriptado) + "\\n" + EncriptacionFernet.EncriptarString(u.Correo,LLaveEncriptado) + "\\n" + EncriptacionFernet.EncriptarString(u.Password,LLaveEncriptado) + "\\n" + EncriptacionFernet.EncriptarString(u.Cuenta,LLaveEncriptado)
+}
+func (u Usuario) toStringEncripSensible() string {
+	return EncriptacionFernet.EncriptarString(strconv.Itoa(u.Dpi),LLaveEncriptado) + "\\n" + u.Nombre + "\\n" + EncriptacionFernet.EncriptarString(u.Correo,LLaveEncriptado) + "\\n" + EncriptacionFernet.EncriptarString(u.Password,LLaveEncriptado) + "\\n" + u.Cuenta
 }
 //Estructura para recibir usuarios
 

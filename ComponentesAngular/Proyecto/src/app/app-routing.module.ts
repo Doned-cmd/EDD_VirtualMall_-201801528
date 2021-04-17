@@ -11,9 +11,11 @@ import {MesPedidoComponent} from './components/mes-pedido/mes-pedido.component'
 import {DiaPedidoComponent} from './components/dia-pedido/dia-pedido.component'
 import {ListaProductosComponent} from './components/lista-productos/lista-productos.component'
 import {CargarInventarioComponent} from './components/cargar-inventario/cargar-inventario.component'
+import {CargarUsuariosComponent} from './components/cargar-usuarios/cargar-usuarios.component'
 import {CargarPedidosComponent} from './components/cargar-pedidos/cargar-pedidos.component'
 import {CargarTiendasComponent} from './components/cargar-tiendas/cargar-tiendas.component'
 import {LoginComponent} from './components/login/login.component'
+import {ReporteUsuariosComponent} from './components/reporte-usuarios/reporte-usuarios.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -26,6 +28,14 @@ const routes: Routes = [
   {
     path: 'CargarInventario',
     component: CargarInventarioComponent,
+  },
+  {
+    path: 'CargarUsuarios',
+    component: CargarUsuariosComponent,
+  },
+  {
+    path: 'ReportarUsuarios',
+    component: ReporteUsuariosComponent,
   },
   {
     path: 'Login',

@@ -2,6 +2,7 @@ package main
 
 import (
 	"../Estructuras"
+	"../EncriptacionFernet"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/handlers"
@@ -52,87 +53,37 @@ var ArregloCali []ArregloLinea
 var ArbolUsuarios *Estructuras.BTree
 
 func main() {
-	ArbolUsuarios = Estructuras.NewBTree()
+	ArbolUsuarios = Estructuras.NewBTree(5)
 
 	UsuarioAdmin := Estructuras.Usuario{
-		Dpi:      1,
-		Nombre:   "Admin",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
+		Dpi:      1234567890101,
+		Nombre:   "EDD2021",
+		Correo:   "auxiliar@edd.com",
+		Password: "12343",
 		Cuenta:   "Admin",
-	}
-	Usuario := Estructuras.Usuario{
-		Dpi:      2,
-		Nombre:   "Cuenta1",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario2 := Estructuras.Usuario{
-		Dpi:      3,
-		Nombre:   "Cuenta2",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario3 := Estructuras.Usuario{
-		Dpi:      4,
-		Nombre:   "Cuenta3",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario4 := Estructuras.Usuario{
-		Dpi:      5,
-		Nombre:   "Cuenta4",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario5 := Estructuras.Usuario{
-		Dpi:      6,
-		Nombre:   "Cuenta5",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario6 := Estructuras.Usuario{
-		Dpi:      7,
-		Nombre:   "Cuenta5",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario7 := Estructuras.Usuario{
-		Dpi:      8,
-		Nombre:   "Cuenta5",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
-	}
-	Usuario8 := Estructuras.Usuario{
-		Dpi:      9,
-		Nombre:   "Cuenta5",
-		Correo:   "Bryan@gmail.com",
-		Password: "123",
-		Cuenta:   "usuario",
 	}
 
 
 	ArbolUsuarios.Insert(UsuarioAdmin)
-	ArbolUsuarios.Insert(Usuario)
-	ArbolUsuarios.Insert(Usuario2)
-	ArbolUsuarios.Insert(Usuario3)
-	ArbolUsuarios.Insert(Usuario4)
-	ArbolUsuarios.Insert(Usuario5)
-	ArbolUsuarios.Insert(Usuario6)
-	ArbolUsuarios.Insert(Usuario7)
-	ArbolUsuarios.Insert(Usuario8)
+	//ArbolUsuarios.Gragicar()
+	EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado)
+	//EncriptacionFernet.Desencriptar(EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado))
 
+	//ArbolUsuarios.Insert(Usuario)
+	//ArbolUsuarios.Insert(Usuario2)
+	//ArbolUsuarios.Insert(Usuario3)
+	//ArbolUsuarios.Insert(Usuario4)
+	//ArbolUsuarios.Insert(Usuario5)
+	//ArbolUsuarios.Insert(Usuario6)
+	//ArbolUsuarios.Insert(Usuario7)
+	//ArbolUsuarios.Insert(Usuario8)
+	//ArbolUsuarios.Insert(Usuario9)
+	//ArbolUsuarios.Insert(Usuario10)
 
 
 	//ArbolUsuarios.Insert(Nuevo4)
-	ArbolUsuarios.ImprimirArbol()
+	//ArbolUsuarios.ImprimirArbol()
+	//fmt.Println(ArbolUsuarios.Gragicar())
 	//ArbolUsuarios.Gragicar()
 	//numeros := []int{5,4,6}
 	//for x,rec := range numeros {
@@ -185,11 +136,15 @@ func request(){
 	myrouter.HandleFunc("/DevolverListaProductPedidos",DevolverListaProductPedidos).Methods("GET")
 
 
+	myrouter.HandleFunc("/CargarUsuarios",CargarUsuarios).Methods("POST")
+	myrouter.HandleFunc("/RegistrarUsuario",RegistrarUsuario).Methods("POST")
 
 	myrouter.HandleFunc("/VerificarCuenta",VerificarCuenta).Methods("POST")
 	myrouter.HandleFunc("/VerificarSiAdmin",VerificarSiAdmin).Methods("POST")
 	myrouter.HandleFunc("/DevolverCuenta",DevolverCuenta).Methods("GET")
-
+	myrouter.HandleFunc("/EliminarUsuario",EliminarUsuario).Methods("POST")
+	myrouter.HandleFunc("/GenerarReporte",GenerarReporte).Methods("POST")
+	//GenerarReporte
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -1041,7 +996,7 @@ func CrearDotAnio (w http.ResponseWriter, r *http.Request){
 	//var path = "D:/Escritorio/USAC/EDD/Proyecto/Practica 1/ComponentesAngular/Proyecto/src/assets/archivosd/anios.dot"
 }
 
-//Cuentas
+//Cuentas y sus verificaciones ------------------------------------------------------------------------------------------------
 var UsuarioLoged *Estructuras.Usuario
 
 func VerificarCuenta (w http.ResponseWriter, r *http.Request) {
@@ -1121,7 +1076,78 @@ func DevolverCuenta (w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mandar)
 }
 
+func CargarUsuarios(w http.ResponseWriter, r *http.Request){
+	var Users CargaDeUsers
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &Users)
+	for _,i:= range Users.Usuarios {//recorer el arreglo de usuarios
+		IngresarUsuario(i)
+	}
+	fmt.Println(ArbolUsuarios.Gragicar(0))
+}
+type CargaDeUsers struct{
+	Usuarios []Estructuras.Usuario
+}
+func IngresarUsuario(usuario Estructuras.Usuario){
+	ArbolUsuarios.Insert(usuario)
+}
 
+func RegistrarUsuario(w http.ResponseWriter, r *http.Request){
+	var Users Estructuras.Usuario
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	//fmt.Println(r.Body)
+	json.Unmarshal(reqBody, &Users)
+	fmt.Println(Users)
+	IngresarUsuario(Users)
+	//json.NewEncoder(w).Encode(true)
+}
+
+func EliminarUsuario(w http.ResponseWriter, r *http.Request){
+	//fmt.Println("elminando")
+	var contraseña Estructuras.UsuarioJson
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	//fmt.Println(r.Body)
+	json.Unmarshal(reqBody, &contraseña)
+
+
+
+	if contraseña.Password == UsuarioLoged.Password{
+		var Usuario *Estructuras.Usuario
+		ArbolUsuarios.Remove(*UsuarioLoged)
+		UsuarioLoged = Usuario
+		ArbolUsuarios.ImprimirArbol()
+		fmt.Println("Eliminado", Usuario)
+		json.NewEncoder(w).Encode(true)
+	}else {
+		json.NewEncoder(w).Encode(false)
+	}
+}
+
+func GenerarReporte(w http.ResponseWriter, r *http.Request){
+	var llave string
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &llave)
+
+	if llave != ""{
+		Estructuras.LLaveEncriptado = llave
+	}
+
+	ArbolUsuarios.Gragicar(0)
+	ArbolUsuarios.Gragicar(1)
+	ArbolUsuarios.Gragicar(2)
+}
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 

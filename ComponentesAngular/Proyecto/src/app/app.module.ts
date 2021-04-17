@@ -18,6 +18,8 @@ import { LoginComponent } from './components/login/login.component';
 import { CargarTiendasComponent } from './components/cargar-tiendas/cargar-tiendas.component';
 import { CargarInventarioComponent } from './components/cargar-inventario/cargar-inventario.component';
 import { CargarPedidosComponent } from './components/cargar-pedidos/cargar-pedidos.component';
+import { CargarUsuariosComponent } from './components/cargar-usuarios/cargar-usuarios.component';
+import { ReporteUsuariosComponent } from './components/reporte-usuarios/reporte-usuarios.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { CargarPedidosComponent } from './components/cargar-pedidos/cargar-pedid
     LoginComponent,
     CargarTiendasComponent,
     CargarInventarioComponent,
-    CargarPedidosComponent
+    CargarPedidosComponent,
+    CargarUsuariosComponent,
+    ReporteUsuariosComponent
   ],
   imports: [
     BrowserModule,
