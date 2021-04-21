@@ -2,7 +2,6 @@ package main
 
 import (
 	"../Estructuras"
-	"../EncriptacionFernet"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/handlers"
@@ -54,7 +53,6 @@ var ArbolUsuarios *Estructuras.BTree
 
 func main() {
 	ArbolUsuarios = Estructuras.NewBTree(5)
-
 	UsuarioAdmin := Estructuras.Usuario{
 		Dpi:      1234567890101,
 		Nombre:   "EDD2021",
@@ -66,7 +64,7 @@ func main() {
 
 	ArbolUsuarios.Insert(UsuarioAdmin)
 	//ArbolUsuarios.Gragicar()
-	EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado)
+	//EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado)
 	//EncriptacionFernet.Desencriptar(EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado))
 
 	//ArbolUsuarios.Insert(Usuario)
@@ -85,13 +83,13 @@ func main() {
 	//ArbolUsuarios.ImprimirArbol()
 	//fmt.Println(ArbolUsuarios.Gragicar())
 	//ArbolUsuarios.Gragicar()
-	//numeros := []int{5,4,6}
-	//for x,rec := range numeros {
-	//	if rec == 5 {
-	//		numeros = append(numeros[:x], numeros[x+1:]...)
-	//	}
-	//}
+	//numeros := []int{5}
+	//numeros = append(numeros, 7)
+    //numeros = append(numeros[:0], numeros[0+1:]...) //cola
+	//numeros = append(numeros[:len(numeros)-1], numeros[len(numeros)-1+1:]...) //pila
 
+
+	//fmt.Print(numeros)
 	//numeros = append(numeros, 1)
 	//fmt.Print()
 	request()
@@ -99,7 +97,8 @@ func main() {
 
 	//print(Regresar(3))
 	//Regresar(&(numeros))
-	//fmt.Print(numeros)
+	Estructuras.NumeroGrafo = 0
+	ContarMovRobot = 0
 }
 
 func Regresar(numeros *[]int)  {
@@ -119,6 +118,7 @@ func request(){
 	myrouter.HandleFunc("/getListaTiendas", DevolverlistaTiendas).Methods("GET")
 	myrouter.HandleFunc("/getTiendaActual", TiendaActual).Methods("POST")
 	myrouter.HandleFunc("/getListaProductos", DevolverlistaProductos).Methods("GET")
+
 	myrouter.HandleFunc("/cargarPedido", CargarPedido).Methods("POST")
 	myrouter.HandleFunc("/getListaCarrito", DevolverlistaCarrito).Methods("GET")
 	myrouter.HandleFunc("/ActualizarInventario",ActualizarInventario).Methods("POST")
@@ -126,6 +126,7 @@ func request(){
 	myrouter.HandleFunc("/EliminarProductoCarro",EliminarProductoCarro).Methods("POST")
 	myrouter.HandleFunc("/DevolversumaCarro",DevolversumaCarro).Methods("GET")
 	myrouter.HandleFunc("/ActualizarCarroCambio",ActualizarCarroCambio).Methods("POST")
+
 	myrouter.HandleFunc("/ObtenerAniosPedido",ObtenerAniosPedido).Methods("GET")
 	myrouter.HandleFunc("/ObtenerAnioPedido",ObtenerMesPedido).Methods("POST")
 	myrouter.HandleFunc("/DevolverMesesPedido",DevolverMesesPedido).Methods("GET")
@@ -144,7 +145,9 @@ func request(){
 	myrouter.HandleFunc("/DevolverCuenta",DevolverCuenta).Methods("GET")
 	myrouter.HandleFunc("/EliminarUsuario",EliminarUsuario).Methods("POST")
 	myrouter.HandleFunc("/GenerarReporte",GenerarReporte).Methods("POST")
-	//GenerarReporte
+
+	myrouter.HandleFunc("/CargarEntregas",CargarEntregas).Methods("POST")
+	
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
@@ -762,6 +765,7 @@ func ActualizarListaCarro(w http.ResponseWriter, r *http.Request){
 		Cantidad:     1,
 		CantidadMax:  ProductoAgregaro.Cantidad,
 		Imagen:       ProductoAgregaro.Imagen,
+		Almacenamiento: ProductoAgregaro.Almacenamiento,
 	}
 
 	if(noDuplicarCarro(nuevoProduct)){
@@ -891,6 +895,25 @@ func ActualizarEstadoInventario(rec Estructuras.ProductoAngular){
 		}
 	}
 	var ReiniciarLista []Estructuras.ProductoAngular
+	var NuevaListaCarro []Estructuras.ProductoRobot
+	for _,i := range ListaCarro{
+		nuevo:= Estructuras.ProductoRobot{
+			Tienda:         i.Tienda,
+			Departamento:   i.Departamento,
+			Calificacion:   i.Calificacion,
+			Nombre:         i.Nombre,
+			Codigo:         i.Codigo,
+			Descripcion:    i.Descripcion,
+			Precio:         i.Precio,
+			Cantidad:       i.Cantidad,
+			CantidadMax:    i.CantidadMax,
+			Imagen:         i.Imagen,
+			Almacenamiento: i.Almacenamiento,
+			Recolectado:    false,
+		}
+		NuevaListaCarro = append(NuevaListaCarro, nuevo)
+	}
+	AccionarRobot(NuevaListaCarro)
 	ListaCarro = ReiniciarLista
 }
 func GenerarPedido(rec Estructuras.ProductoAngular){
@@ -1086,7 +1109,7 @@ func CargarUsuarios(w http.ResponseWriter, r *http.Request){
 	for _,i:= range Users.Usuarios {//recorer el arreglo de usuarios
 		IngresarUsuario(i)
 	}
-	fmt.Println(ArbolUsuarios.Gragicar(0))
+	//fmt.Println(ArbolUsuarios.Gragicar(0))
 }
 type CargaDeUsers struct{
 	Usuarios []Estructuras.Usuario
@@ -1148,6 +1171,83 @@ func GenerarReporte(w http.ResponseWriter, r *http.Request){
 	ArbolUsuarios.Gragicar(1)
 	ArbolUsuarios.Gragicar(2)
 }
+
+
+//Grafo-----------------------------------------------------------------------------------------------------------------
+var GrafoEntragas Estructuras.Grafo
+var PosicionIniciarRobot string
+var PosicionActualRobot string
+var EntregaRobot string
+func CargarEntregas(w http.ResponseWriter, r *http.Request)  {
+
+	var Paquete Estructuras.PaqueteGrafos
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &Paquete)
+
+
+	for _,i:= range Paquete.Nodos {//Insertar uno por uno los vertices
+		if GrafoEntragas.GetVertice(i.Nombre) == nil {
+			GrafoEntragas.InsertVertice(i.Nombre)
+		}
+	}
+	for _,i:= range Paquete.Nodos {//Insertar las aristas, o transiciones
+		for _,j:= range i.Enlaces {
+			//fmt.Println("Nombre i: ",i.Nombre," Nombre j: " ,j.Nombre," Distancia: " ,j.Distancia)
+			GrafoEntragas.InsertArista(i.Nombre,j.Nombre,j.Distancia)
+			GrafoEntragas.InsertArista(j.Nombre,i.Nombre,j.Distancia)//Hace que sea bi direccional cada arista
+		}
+	}
+	fmt.Println("----------------------------------------")
+	//GrafoEntragas.RutaMasCorta("Despacho","Textiles",true)
+	PosicionIniciarRobot = Paquete.PosicionInicialRobot
+	PosicionActualRobot =Paquete.PosicionInicialRobot
+	EntregaRobot = Paquete.Entrega
+	GrafoEntragas.GraficarGrafo()
+}
+var ContarMovRobot int
+func AccionarRobot(ListaCarro []Estructuras.ProductoRobot){
+	var Comparador int
+	contadorRecolectados := 0
+	//for _,i := range ListaCarro{
+	//	if !i.Recolectado {
+	//		encontrado,actual := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Departamento,false)
+	//		if encontrado{
+	//			Comparador = actual
+	//		}
+	//		break
+	//	}
+	//}
+	posicionDeMenor := -1
+	for x,i := range ListaCarro{
+		if !i.Recolectado {
+			encontrado,actual := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Departamento,false)
+			if encontrado {
+				contadorRecolectados ++
+				if Comparador > actual {
+					Comparador = actual
+					posicionDeMenor = x
+				}
+			}
+		}
+	}
+	if posicionDeMenor != -1 {
+		GrafoEntragas.RutaMasCorta(PosicionActualRobot, ListaCarro[posicionDeMenor].Departamento, true)
+		PosicionActualRobot = ListaCarro[posicionDeMenor].Departamento
+		ListaCarro[posicionDeMenor].Recolectado = true
+		ContarMovRobot++
+		AccionarRobot(ListaCarro)
+	}
+	if contadorRecolectados == len(ListaCarro)-1{
+		GrafoEntragas.RutaMasCorta(PosicionActualRobot, "Despacho", true)
+		GrafoEntragas.RutaMasCorta("Despacho", PosicionIniciarRobot, true)
+		PosicionActualRobot = PosicionIniciarRobot
+	}
+
+}
+
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 

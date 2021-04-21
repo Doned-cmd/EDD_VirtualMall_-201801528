@@ -69,7 +69,7 @@ type Producto struct {
 	Precio float32	`json:"Precio"`
 	Cantidad int `json:"Cantidad"`
 	Imagen string  `json:"Imagen"`
-
+	Almacenamiento string `json:"Almacenamiento"`
 }
 type SobreInventario struct {
 	Invetarios []Invetarios
@@ -94,6 +94,7 @@ type ProductoAngular struct {
 	Cantidad int
 	CantidadMax int
 	Imagen string
+	Almacenamiento string
 }
 
 type TiendaAngular struct {
@@ -144,4 +145,37 @@ func (u Usuario) toStringEncripSensible() string {
 type UsuarioJson struct {
 	Dpi int `json:"Dpi"`
 	Password string `json:"Password"`
+}
+
+
+//EStrcutura para los grafos
+//EStrcutura para cargar grafos
+
+type PaqueteGrafos struct {
+	Nodos []NodosGrafo `json:"Nodos"`
+	PosicionInicialRobot string `json:"PosicionInicialRobot"`
+	Entrega string `json:"Entrega"`
+}
+type NodosGrafo struct {
+	Nombre string `json:"Nombre"`
+	Enlaces []EnlacesGrafo  `json:"Enlaces"`
+}
+type EnlacesGrafo struct {
+	Nombre string `json:"Nombre"`
+	Distancia int  `json:"Distancia"`
+}
+
+type ProductoRobot struct {
+	Tienda string
+	Departamento string
+	Calificacion int
+	Nombre string
+	Codigo int
+	Descripcion string
+	Precio float32
+	Cantidad int
+	CantidadMax int
+	Imagen string
+	Almacenamiento string
+	Recolectado bool
 }

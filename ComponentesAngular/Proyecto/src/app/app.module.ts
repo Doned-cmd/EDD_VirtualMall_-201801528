@@ -20,6 +20,9 @@ import { CargarInventarioComponent } from './components/cargar-inventario/cargar
 import { CargarPedidosComponent } from './components/cargar-pedidos/cargar-pedidos.component';
 import { CargarUsuariosComponent } from './components/cargar-usuarios/cargar-usuarios.component';
 import { ReporteUsuariosComponent } from './components/reporte-usuarios/reporte-usuarios.component';
+import { CargarEntregasComponent } from './components/cargar-entregas/cargar-entregas.component';
+import { RutasActualesComponent } from './components/rutas-actuales/rutas-actuales.component';
+import { ReportesRobotComponent } from './components/reportes-robot/reportes-robot.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,10 @@ import { ReporteUsuariosComponent } from './components/reporte-usuarios/reporte-
     CargarInventarioComponent,
     CargarPedidosComponent,
     CargarUsuariosComponent,
-    ReporteUsuariosComponent
+    ReporteUsuariosComponent,
+    CargarEntregasComponent,
+    RutasActualesComponent,
+    ReportesRobotComponent
   ],
   imports: [
     BrowserModule,

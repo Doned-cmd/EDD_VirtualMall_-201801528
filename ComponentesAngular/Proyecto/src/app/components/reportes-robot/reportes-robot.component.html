@@ -1,0 +1,63 @@
+<section id="cart_items">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ol class="breadcrumb">
+              <li><a href="/">Inicio</a></li>
+              <li class="">Ver reportes</li>
+            </ol>
+        </div>
+        <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+                <thead>
+                    <tr class="cart_menu">
+                        <td class="image">Reporte</td>     
+
+                        <td class="total">Ingresar LLave</td>
+                        
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cart_product">
+                            <p > <a> Generar Reporte</a> </p>
+                        </td>
+                       <td>
+                           
+                       </td>
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete" download href="assets/archivosd/Grafo0.svg" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                    
+                  
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section id="do_action">
+    <div class="container">
+        <div class="heading">
+         
+        </div>
+        
+    </div>
+</section>
+
+
+
+<div *ngIf="mostrarMensajeError" class="row justify-content-around">
+    <div class="col-md-5">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{mensajeError}}
+            <button type="button" (click)="desactivarMensaje()" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+

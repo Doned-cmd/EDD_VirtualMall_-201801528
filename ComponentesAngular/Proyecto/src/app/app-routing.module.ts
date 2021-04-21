@@ -16,6 +16,9 @@ import {CargarPedidosComponent} from './components/cargar-pedidos/cargar-pedidos
 import {CargarTiendasComponent} from './components/cargar-tiendas/cargar-tiendas.component'
 import {LoginComponent} from './components/login/login.component'
 import {ReporteUsuariosComponent} from './components/reporte-usuarios/reporte-usuarios.component'
+import { CargarEntregasComponent } from './components/cargar-entregas/cargar-entregas.component'
+import { RutasActualesComponent } from './components/rutas-actuales/rutas-actuales.component'
+import { ReportesRobotComponent } from './components/reportes-robot/reportes-robot.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -76,7 +79,19 @@ const routes: Routes = [
   {
     path: 'ListaPedido',
     component: ListaProductosComponent,
-  }     
+  },
+  {
+    path: 'CargarRutas',
+    component: CargarEntregasComponent,
+  },
+  {
+    path: 'RutasActuales',
+    component: RutasActualesComponent,
+  },
+  {
+    path: 'ReportesRobot',
+    component: ReportesRobotComponent,
+  }    
 ];
 
 @NgModule({
