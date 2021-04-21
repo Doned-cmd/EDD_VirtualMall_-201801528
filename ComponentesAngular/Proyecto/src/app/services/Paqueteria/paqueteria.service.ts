@@ -20,5 +20,12 @@ export class PaqueteriaService {
   return this.http.post<any>(baseURL + 'CargarEntregas', Grafos, httpOptions);
   }
 
-  
+  MostrarMovimientosRobot():Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+  return this.http.get<number[]>(baseURL + 'MostrarMovimientosRobot', httpOptions);
+  }
 }

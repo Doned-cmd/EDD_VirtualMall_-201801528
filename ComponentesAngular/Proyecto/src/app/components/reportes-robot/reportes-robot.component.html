@@ -18,15 +18,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr *ngFor="let num of listado">
                         <td class="cart_product">
-                            <p > <a> Generar Reporte</a> </p>
+                            <p > <a> movimiento {{num}}</a> </p>
                         </td>
                        <td>
                            
                        </td>
                         <td class="cart_total">
-                            <a class="cart_quantity_delete" download href="assets/archivosd/Grafo0.svg" ><i class="fa fa-times"></i></a>
+                            <a class="cart_quantity_delete" download  href="" #Descarga (click)="Descargar(Descarga,num)"><i class="fa fa-times"></i></a>
                         </td>
                     </tr>
                     

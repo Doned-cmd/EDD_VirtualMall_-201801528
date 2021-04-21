@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {CuentasService} from '../../services/Cuentas/cuentas.service';
+import {PaqueteriaService} from '../../services/Paqueteria/paqueteria.service';
 @Component({
   selector: 'app-reportes-robot',
   templateUrl: './reportes-robot.component.html',
@@ -12,10 +12,20 @@ export class ReportesRobotComponent implements OnInit {
   mostrarMensajeError:boolean = false;
   mensajeError:string;
   Key:string
-  constructor(private ServicioDePedidos: CuentasService) { 
-    
+  listado:number[]
+  constructor(private ServicioDePedidos: PaqueteriaService) { 
+    this.ServicioDePedidos.MostrarMovimientosRobot().subscribe((dataList:number[])=>{
+      this.listado = dataList      
+    },(err)=>{
+      //this.mostrarMensajeError=true
+      //this.mensajeError = 'Error al cargar las tiendas'
+    }
+    )
   }
-
+  Descargar(Descarga,num:number){
+    Descarga.href = "assets/archivosd/CaminoCorto"+ num+".svg"
+    Descarga.download = "CaminoCorto"+ num+".svg"
+  }
   
 
   ngOnInit(): void {

@@ -431,9 +431,9 @@ func (g *Grafo) EncontrarDistancia(ruta []*Ruta) int {
 func label(ruta []*Ruta) string {
 	cadena := ""
 	for i := len(ruta)-1;i>=0;i--{
-		di := strconv.Itoa(ruta[i].distancia)
-		cadena += ruta[i].lugar  + "[label=\"" + "Lugar: " + ruta[i].lugar  + di + "\"]\n"
-		//+ "\\nDistancia: "
+		//di := strconv.Itoa(ruta[i].distancia)
+		cadena += ruta[i].lugar  + "[label=\"" + "Lugar: " + ruta[i].lugar  + "\"]\n"
+		// + di  + "\\nDistancia: "
 	}
 	return cadena
 }

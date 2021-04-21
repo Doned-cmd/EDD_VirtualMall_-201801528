@@ -98,7 +98,7 @@ func main() {
 	//print(Regresar(3))
 	//Regresar(&(numeros))
 	Estructuras.NumeroGrafo = 0
-	ContarMovRobot = 0
+	ContarMovRobot = -1
 }
 
 func Regresar(numeros *[]int)  {
@@ -147,6 +147,7 @@ func request(){
 	myrouter.HandleFunc("/GenerarReporte",GenerarReporte).Methods("POST")
 
 	myrouter.HandleFunc("/CargarEntregas",CargarEntregas).Methods("POST")
+	myrouter.HandleFunc("/MostrarMovimientosRobot",MostrarMovimientosRobot).Methods("GET")
 	
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
@@ -1245,12 +1246,20 @@ func AccionarRobot(ListaCarro []Estructuras.ProductoRobot){
 	}
 	if contadorRecolectados == len(ListaCarro)-1{
 		GrafoEntragas.RutaMasCorta(PosicionActualRobot, EntregaRobot, true)
+		ContarMovRobot++
 		GrafoEntragas.RutaMasCorta(EntregaRobot, PosicionIniciarRobot, true)
+		ContarMovRobot++
 		PosicionActualRobot = PosicionIniciarRobot
 	}
 
 }
-
+func MostrarMovimientosRobot(w http.ResponseWriter, r *http.Request){
+	var arreglo []int
+	for i := 0; i<ContarMovRobot;i++{
+		arreglo = append(arreglo, i)
+	}
+	json.NewEncoder(w).Encode(arreglo)
+}
 //CREAR UNA MATRIZ CON DIMENSIONES ESTATICAS
 //actualmente no se usa
 
