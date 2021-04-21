@@ -72,7 +72,7 @@ type Producto struct {
 	Almacenamiento string `json:"Almacenamiento"`
 }
 type SobreInventario struct {
-	Invetarios []Invetarios
+	Invetarios []Invetarios `json:"Inventarios"`
 }
 
 //Estructura para los pedidos

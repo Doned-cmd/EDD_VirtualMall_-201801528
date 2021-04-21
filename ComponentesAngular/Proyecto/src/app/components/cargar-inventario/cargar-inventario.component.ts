@@ -8,9 +8,6 @@ import { ProductoService } from '../../services/producto/producto.service';
 })
 export class CargarInventarioComponent implements OnInit {
 
-  ngOnInit(): void {
-  }
-  constructor(private tiendasService : ProductoService) { }
   @Input() opcion : string = ""
   @Output() onEnter : EventEmitter<string> = new EventEmitter();
 
@@ -43,5 +40,9 @@ export class CargarInventarioComponent implements OnInit {
     //console.log(this.termino)
     //this.onEnter.emit(this.termino);
   }
+
+  constructor(private tiendasService : ProductoService) { }
   
+  ngOnInit(): void {
+  }
 }

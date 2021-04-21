@@ -546,6 +546,8 @@ func CargarInventario(w http.ResponseWriter, r *http.Request){
 	body, _ := ioutil.ReadAll(r.Body)
 	var re Estructuras.SobreInventario
 	json.Unmarshal(body, &re)
+	//fmt.Println(body)
+	fmt.Println(re)
 	//fmt.Println(re.Invetarios)
 	agregarAArbol(re)
 
@@ -1211,38 +1213,39 @@ var ContarMovRobot int
 func AccionarRobot(ListaCarro []Estructuras.ProductoRobot){
 	var Comparador int
 	contadorRecolectados := 0
-	//for _,i := range ListaCarro{
-	//	if !i.Recolectado {
-	//		encontrado,actual := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Departamento,false)
-	//		if encontrado{
-	//			Comparador = actual
-	//		}
-	//		break
-	//	}
-	//}
-	posicionDeMenor := -1
-	for x,i := range ListaCarro{
+	for _,i := range ListaCarro{
 		if !i.Recolectado {
-			encontrado,actual := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Departamento,false)
-			if encontrado {
-				contadorRecolectados ++
-				if Comparador > actual {
-					Comparador = actual
-					posicionDeMenor = x
-				}
+			encontrado,actual := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Almacenamiento,false)
+			if encontrado{
+				Comparador = actual
+				break
 			}
 		}
 	}
+	posicionDeMenor := -1
+	for x,i := range ListaCarro{
+		if !i.Recolectado {
+			encontrado,distanciaAct := GrafoEntragas.RutaMasCorta(PosicionActualRobot,i.Almacenamiento,false)
+			if encontrado {
+				if Comparador >= distanciaAct {
+					Comparador = distanciaAct
+					posicionDeMenor = x
+				}
+			}
+		}else{
+			contadorRecolectados ++
+		}
+	}
 	if posicionDeMenor != -1 {
-		GrafoEntragas.RutaMasCorta(PosicionActualRobot, ListaCarro[posicionDeMenor].Departamento, true)
-		PosicionActualRobot = ListaCarro[posicionDeMenor].Departamento
+		GrafoEntragas.RutaMasCorta(PosicionActualRobot, ListaCarro[posicionDeMenor].Almacenamiento, true)
+		PosicionActualRobot = ListaCarro[posicionDeMenor].Almacenamiento
 		ListaCarro[posicionDeMenor].Recolectado = true
 		ContarMovRobot++
 		AccionarRobot(ListaCarro)
 	}
 	if contadorRecolectados == len(ListaCarro)-1{
-		GrafoEntragas.RutaMasCorta(PosicionActualRobot, "Despacho", true)
-		GrafoEntragas.RutaMasCorta("Despacho", PosicionIniciarRobot, true)
+		GrafoEntragas.RutaMasCorta(PosicionActualRobot, EntregaRobot, true)
+		GrafoEntragas.RutaMasCorta(EntregaRobot, PosicionIniciarRobot, true)
 		PosicionActualRobot = PosicionIniciarRobot
 	}
 

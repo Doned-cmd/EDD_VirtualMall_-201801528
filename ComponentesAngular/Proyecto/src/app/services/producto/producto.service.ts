@@ -76,7 +76,7 @@ export class ProductoService {
   return this.http.get<number>(baseURL + 'DevolversumaCarro', httpOptions);
   }
 
-  CargarInventario(tiendaActual: String):Observable<any>{
+  CargarInventario(tiendaActual: string):Observable<any>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

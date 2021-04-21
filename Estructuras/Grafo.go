@@ -381,7 +381,7 @@ func (g *Grafo) RutaMasCorta(Origen string, Destino string, graficar bool) (bool
 		fmt.Println("No se encontro ruta")
 		return false,0
 	}else{
-
+		fmt.Println("Se encontro ruta")
 		if graficar {
 			//fmt.Println(listaOrdenada)
 			//temporal := ruta[0]
@@ -400,6 +400,7 @@ func (g *Grafo) RutaMasCorta(Origen string, Destino string, graficar bool) (bool
 			cadena += "\n}"
 			//Metodo para graficar
 			Graficar(cadena, "CaminoCorto", NumeroGrafo)
+			fmt.Println("Imagen generada")
 			NumeroGrafo++
 		}
 		return true, g.EncontrarDistancia(ruta)
@@ -450,7 +451,7 @@ func Graficar(texto string, nombre string ,num int) string{
 	if err2 != nil {
 		log.Fatal(err2)
 	}
-	fmt.Println("$$$ Archivo dot escrito.")
+	fmt.Println("Archivo dot escrito.")
 
 
 	path,_ := exec.LookPath("dot")
@@ -479,11 +480,11 @@ func ordenar(ListaAOrdenar []*VerticeCosto) []*VerticeCosto{
 			}
 		}
 	}
-	fmt.Println("------------------")
-	for _,x := range ListaAOrdenar {
-		fmt.Println("Lista Ordenada", x.costo)
-	}
-	fmt.Println("------------------")
+	//fmt.Println("------------------")
+	//for _,x := range ListaAOrdenar {
+	//	fmt.Println("Lista Ordenada", x.costo)
+	//}
+	//fmt.Println("------------------")
 	return ListaAOrdenar
 }
 

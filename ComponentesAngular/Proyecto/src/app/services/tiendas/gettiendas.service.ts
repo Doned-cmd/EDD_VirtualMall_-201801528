@@ -30,7 +30,7 @@ export class GettiendasService {
     return this.http.post<Tienda>(baseURL + 'getTiendaActual', tiendaActual, httpOptions);
   }
 
-  CargarTienda(tiendaActual: String):Observable<any>{
+  CargarTienda(tiendaActual: string):Observable<any>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
