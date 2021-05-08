@@ -1,0 +1,109 @@
+<section id="cart_items">
+    <div class="container">
+        <div class="breadcrumbs">
+            <ol class="breadcrumb">
+              <li><a href="/">Inicio</a></li>
+              <li class="">Ver reportes</li>
+            </ol>
+        </div>
+        <div class="table-responsive cart_info">
+            <table class="table table-condensed">
+                <thead>
+                    <tr class="cart_menu">
+                        <td class="image">Reporte</td>     
+
+                        <td class="total">Ingresar LLave</td>
+                        
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cart_product">
+                            <p (click)="GenerarReporte()"> <a> Generar Reporte Transacciones Usuarios</a> </p>
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete" download href="assets/archivosd/ArbolMerkleeUsuarios.svg" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cart_product">
+                            <p (click)="GenerarReporte()"> <a>  Generar Reporte Transacciones Pedidos</a> </p>
+                        </td>
+                        
+                        <td>
+                           
+                        </td>
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete" download  href="assets/archivosd/ArbolMerkleePedidos.svg" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cart_product">
+                            <p (click)="GenerarReporte()"><a>  Generar Reporte Transacciones Tiendas </a></p >
+                        </td>
+                        <td>
+                            
+                        </td>
+
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete"  download href="assets/archivosd/ArbolMerkleeTiendas.svg" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="cart_product">
+                            <p (click)="GenerarReporte()"><a>  Generar Reporte Transacciones Productos </a></p >
+                        </td>
+
+                        <td>
+                            
+                        </td>
+
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete"  download href="assets/archivosd/ArbolMerkleeProductos.svg" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cart_product">
+                            <p (click)="GenerarReporte()"><a>  Cambiar tiempo de intervalo para generacion de bloques </a></p >
+                        </td>
+
+                        <td>
+                            <input type="text" placeholder="Ingrese el intervalo para generar reportes" [(ngModel)] = "numero" name="PasswordReg"/>
+                        </td>
+
+                        <td class="cart_total">
+                            <a class="cart_quantity_delete"  (click)="CambiarIntervalo()" ><i class="fa fa-times"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section id="do_action">
+    <div class="container">
+        <div class="heading">
+         
+        </div>
+        
+    </div>
+</section>
+
+
+
+<div *ngIf="mostrarMensajeError" class="row justify-content-around">
+    <div class="col-md-5">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{mensajeError}}
+            <button type="button" (click)="desactivarMensaje()" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>

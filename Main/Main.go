@@ -62,6 +62,7 @@ var Tiendastran []string
 var Productostran []string
 
 func main() {
+	Tiempo = 5
 	Cada5Min()
 	ejecutarorden36()
 
@@ -77,7 +78,12 @@ func ejecutarorden36(){
 		Cuenta:   "Admin",
 	}
 
-
+	PedidosMerklee = Estructuras.NewMerkle(Pedidostran)
+	UsuariosMerklee = Estructuras.NewMerkle(Usuariostran)
+	TiendasMerklee = Estructuras.NewMerkle(Tiendastran)
+	ProductosMerklee = Estructuras.NewMerkle(Productostran)
+	indicie := obtenerIndice()
+	bloque = Estructuras.NewBloque(indicie,0000,"","","")
 	ArbolUsuarios.Insert(UsuarioAdmin)
 	//ArbolUsuarios.Gragicar()
 	//EncriptacionFernet.EncriptarString("hola",Estructuras.LLaveEncriptado)
@@ -93,12 +99,7 @@ func ejecutarorden36(){
 	//ArbolUsuarios.Insert(Usuario8)
 	//ArbolUsuarios.Insert(Usuario9)
 	//ArbolUsuarios.Insert(Usuario10)
-	var palmerkle []string
-	palmerkle = append(palmerkle, "ho\nla")
-	palmerkle = append(palmerkle, "nofda\nsnko")
-	palmerkle = append(palmerkle, "fdsa\nfdsav ")
-	palmerkle = append(palmerkle, "fdasf\nasdvdsag")
-	palmerkle = append(palmerkle, "qwes\nde")
+
 
 
 	//print(ArbolMerklee.Graficar())
@@ -130,13 +131,13 @@ func ejecutarorden36(){
 
 }
 var bloque *Estructuras.Bloque
-
+var Tiempo int
 func Cada5Min(){
-	 NewTimer(300, func() {
-		fmt.Println("Congratulations! Your 3 second NewTimer() timer finished.\n")
+	 NewTimer(Tiempo, func() {
+		fmt.Println("Congratulations! Your " + strconv.Itoa(Tiempo)+ " second NewTimer() timer finished.\n")
 
 
-		var datos string
+		datos := ""
 		indicie := obtenerIndice()
 	 	if ProductosMerklee.Raiz != nil{
 		 	datos += ProductosMerklee.Raiz.HASH + "\\n"
@@ -152,24 +153,36 @@ func Cada5Min(){
 	 	}
 	 	previo := ""
 		if bloque.ProviousHash != "" {
-			previo = bloque.ProviousHash
+			previo = bloque.Hash
 		}
 
 	 	bloque = Estructuras.NewBloque(indicie,0000,datos,previo,"")
-
+		bloque.CrearHash()
+	 	bloque.GuardarBloque()
 
 	 	PedidosMerklee = Estructuras.NewMerkle(Pedidostran)
 	 	UsuariosMerklee = Estructuras.NewMerkle(Usuariostran)
 	 	TiendasMerklee = Estructuras.NewMerkle(Tiendastran)
-	 	UsuariosMerklee = Estructuras.NewMerkle(Productostran)
+	 	ProductosMerklee = Estructuras.NewMerkle(Productostran)
 
 		Cada5Min()
 	})
 }
 
+func GenerarReportesMerkle(w http.ResponseWriter, r *http.Request){
+	PedidosMerklee = Estructuras.NewMerkle(Pedidostran)
+	UsuariosMerklee = Estructuras.NewMerkle(Usuariostran)
+	TiendasMerklee = Estructuras.NewMerkle(Tiendastran)
+	ProductosMerklee = Estructuras.NewMerkle(Productostran)
+
+	PedidosMerklee.Graficar("MerkleePedidos")
+	UsuariosMerklee.Graficar("MerkleeUsuarios")
+	TiendasMerklee.Graficar("MerkleeTiendas")
+	ProductosMerklee.Graficar("MerkleeProductos")
+}
 
 func obtenerIndice() int {
-	files,_ := ioutil.ReadDir("../ArchivosBlock/")
+	files,_ := ioutil.ReadDir("D:\\Escritorio\\USAC\\EDD\\Proyecto\\Practica 1\\ArchivosBlock")
 	fmt.Println(len(files))
 	return len(files)
 }
@@ -233,11 +246,21 @@ func request(){
 
 	myrouter.HandleFunc("/CargarEntregas",CargarEntregas).Methods("POST")
 	myrouter.HandleFunc("/MostrarMovimientosRobot",MostrarMovimientosRobot).Methods("GET")
-	
+
+	myrouter.HandleFunc("/GenerarReportesMerkle",GenerarReportesMerkle).Methods("GET")
+
+	myrouter.HandleFunc("/CambiarReloj",CambiarReloj).Methods("POST")
+
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(myrouter)))
 }
 
-
+func CambiarReloj(w http.ResponseWriter, r *http.Request){
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Datos Inválidos")
+	}
+	json.Unmarshal(reqBody, &Tiempo)
+}
 
 
 func homePage(w http.ResponseWriter, r *http.Request){
@@ -373,6 +396,7 @@ func  ConvertToMatrix (sbr Estructuras.Sobre) {
 					//print(t.Calificacion, t.Nombre)
 					//calificaciones[4].Lista.ImprimirLista()
 				}
+				Tiendastran = append(Tiendastran, t.Nombre +" \\n" + t.Descripcion + " \\n" +s.Nombre +" \\n"+ t.Logo + " \\n"+t.Contacto + " \\n" + strconv.Itoa(t.Calificacion) + "\\n" + "TIENDA CARGADA")
 			}
 			Departamentos[depa].Calificaciones = calificaciones
 		}
@@ -660,6 +684,7 @@ func ActualizarInventarioSumando(inventario Estructuras.Invetarios ,producto Est
 		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
 			if cali.Lista.Search(inventario.Tienda) != -1 {
 				cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.SumarInventario(producto)
+				Productostran = append(Productostran, inventario.Tienda +" \\n" + inventario.Departamento + " \\n" +strconv.Itoa(inventario.Calificacion) +" \\n"+ producto.Nombre + " \\n"+ producto.Descripcion+ " \\n" + producto.Almacenamiento + "\\n"+ producto.Imagen+ " \\n" + strconv.Itoa(producto.Codigo) + "\\n"  + fmt.Sprintf("%f", producto.Precio) + "\\n" + " INVENTARIO ACTUALIZADO")
 			}
 		}
 	}
@@ -670,6 +695,7 @@ func agregarAArreglo(inventario Estructuras.Invetarios ,producto Estructuras.Pro
 		if (cali.Calificacion+1 == inventario.Calificacion) && (cali.Departamento == inventario.Departamento) {
 			//fmt.Println(producto)
 			if cali.Lista.Search(inventario.Tienda) != -1 {
+				Productostran = append(Productostran, inventario.Tienda +" \\n" + inventario.Departamento + " \\n" +strconv.Itoa(inventario.Calificacion) +" \\n"+ producto.Nombre + " \\n"+ producto.Descripcion+ " \\n" + producto.Almacenamiento + "\\n"+ producto.Imagen+ " \\n" + strconv.Itoa(producto.Codigo) + "\\n"  + fmt.Sprintf("%f", producto.Precio) + "\\n" + " INVENTARIO CARGADO")
 				cali.Lista.SearchIndex(cali.Lista.Search(inventario.Tienda)).GetTienda().Productos.Insertar(producto)
 			}
 		}
@@ -764,6 +790,7 @@ func Agregarpedidos(res Estructuras.SobrePedidos){
 						}
 						ArbolPedidos.ReturnAnioNode(anio).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes)).GetMatriz().Insert(dia,inven.Departamento)
 						ArbolPedidos.ReturnAnioNode(anio).Mes.SearchIndex(ArbolPedidos.ReturnAnioNode(anio).Mes.Search(mes)).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(Rec)
+						Pedidostran = append(Pedidostran, strconv.Itoa(anio) +"-" + strconv.Itoa(mes) + "-" +strconv.Itoa(dia) +" \\n"+ inven.Departamento + " \\n"+ inven.Tienda + " \\n" + strconv.Itoa(inven.Calificacion) + "\\n"+ strconv.Itoa(Rec.Codigo) + " \\n" + "PEDIDO CARGADO" )
 						//ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().Insert(dia,inven.Departamento)
 						//ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(Rec)
 					}
@@ -1039,6 +1066,7 @@ func GenerarPedido(rec Estructuras.ProductoAngular){
 				ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().Insert(dia, inven.Departamento)
 				nuevo := Estructuras.Productos{Codigo: rec.Codigo}
 				ArbolPedidos.ReturnAnioNode(anio).Mes.SearchNReturnM(mes).GetMatriz().SearchNreturn(dia, inven.Departamento).Productos.Add(nuevo)
+				Pedidostran = append(Pedidostran, strconv.Itoa(anio) +"-" + strconv.Itoa(mes) + "-" +strconv.Itoa(dia) +" \\n"+ inven.Departamento + " \\n"+ inven.Tienda + " \\n" + strconv.Itoa(inven.Calificacion) + "\\n"+ strconv.Itoa(rec.Codigo) + "\\n" + "PEDIDO GENERADO DESDE CARRITO")
 			}
 		}
 	}
@@ -1141,6 +1169,7 @@ func VerificarCuenta (w http.ResponseWriter, r *http.Request) {
 		}
 
 		if UsuarioN.Password == UsuarioVer.Password{
+			Usuariostran = append(Usuariostran, strconv.Itoa(UsuarioN.Dpi) +" \\n" + UsuarioN.Password + " \\n" +UsuarioN.Cuenta +" \\n"+ UsuarioN.Nombre + " \\n"+ UsuarioN.Correo + "\\n" + "USUARIO LOGGEADO")
 			json.NewEncoder(w).Encode(true)
 			UsuarioLoged = &UsuarioN
 		}else{
@@ -1198,6 +1227,7 @@ func CargarUsuarios(w http.ResponseWriter, r *http.Request){
 	json.Unmarshal(reqBody, &Users)
 	for _,i:= range Users.Usuarios {//recorer el arreglo de usuarios
 		IngresarUsuario(i)
+		Usuariostran = append(Usuariostran, strconv.Itoa(i.Dpi) +" \\n" + i.Password + " \\n" +i.Cuenta +" \\n"+ i.Nombre + " \\n"+ i.Correo + " \\n"+ "USUARIO CARGADO")
 	}
 	//fmt.Println(ArbolUsuarios.Gragicar(0))
 }
@@ -1218,6 +1248,7 @@ func RegistrarUsuario(w http.ResponseWriter, r *http.Request){
 	json.Unmarshal(reqBody, &Users)
 	fmt.Println(Users)
 	IngresarUsuario(Users)
+	Usuariostran = append(Usuariostran, strconv.Itoa(Users.Dpi) +" \\n" + Users.Password + " \\n" +Users.Cuenta +" \\n"+ Users.Nombre + " \\n"+ Users.Correo + " \\n"+ "USUARIO REGISTRADO")
 	//json.NewEncoder(w).Encode(true)
 }
 
@@ -1239,6 +1270,8 @@ func EliminarUsuario(w http.ResponseWriter, r *http.Request){
 		UsuarioLoged = Usuario
 		ArbolUsuarios.ImprimirArbol()
 		fmt.Println("Eliminado", Usuario)
+
+		Usuariostran = append(Usuariostran, strconv.Itoa(UsuarioLoged.Dpi) +" \\n" + UsuarioLoged.Password + " \\n" +UsuarioLoged.Cuenta +" \\n"+ UsuarioLoged.Nombre + " \\n"+ UsuarioLoged.Correo + " \\n"+ "USUARIO ELMINADO")
 		json.NewEncoder(w).Encode(true)
 	}else {
 		json.NewEncoder(w).Encode(false)

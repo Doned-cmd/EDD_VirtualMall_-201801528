@@ -52,7 +52,7 @@ func NewBloque(indice, nonce int,  data, previous, hash string) *Bloque {
 	}
 }
 
-func(b *Bloque) crearHash(){
+func(b *Bloque) CrearHash(){
 	var texto string
 	var hash string
 	texto = strconv.Itoa(b.Indice) + b.Fecha + b.ProviousHash + b.Data + strconv.Itoa(b.Nonce)
@@ -65,7 +65,7 @@ func(b *Bloque) crearHash(){
 }
 
 
-func(b *Bloque) guardarBloque() {
+func(b *Bloque) GuardarBloque() {
 	f, err := os.Create("ArchivosBlock\\"+strconv.Itoa(b.Indice)+".txt")
 	today := time.Now()
 	dia := today.Day()

@@ -23,6 +23,7 @@ import { ReporteUsuariosComponent } from './components/reporte-usuarios/reporte-
 import { CargarEntregasComponent } from './components/cargar-entregas/cargar-entregas.component';
 import { RutasActualesComponent } from './components/rutas-actuales/rutas-actuales.component';
 import { ReportesRobotComponent } from './components/reportes-robot/reportes-robot.component';
+import { ReportesMerkleComponent } from './components/reportes-merkle/reportes-merkle.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { ReportesRobotComponent } from './components/reportes-robot/reportes-rob
     ReporteUsuariosComponent,
     CargarEntregasComponent,
     RutasActualesComponent,
-    ReportesRobotComponent
+    ReportesRobotComponent,
+    ReportesMerkleComponent
   ],
   imports: [
     BrowserModule,

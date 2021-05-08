@@ -19,6 +19,7 @@ import {ReporteUsuariosComponent} from './components/reporte-usuarios/reporte-us
 import { CargarEntregasComponent } from './components/cargar-entregas/cargar-entregas.component'
 import { RutasActualesComponent } from './components/rutas-actuales/rutas-actuales.component'
 import { ReportesRobotComponent } from './components/reportes-robot/reportes-robot.component'
+import { ReportesMerkleComponent } from './components/reportes-merkle/reportes-merkle.component'
 /*import { CrearEstudianteComponent } from "./components/crear-estudiante/crear-estudiante.component";
 
 import { AgregarCursosComponent } from "./components/agregar-cursos/agregar-cursos.component";*/
@@ -91,7 +92,12 @@ const routes: Routes = [
   {
     path: 'ReportesRobot',
     component: ReportesRobotComponent,
-  }    
+  },    
+  {
+    path: 'ReportesMerkle',
+    component: ReportesMerkleComponent,
+  }
+  
 ];
 
 @NgModule({

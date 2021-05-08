@@ -87,7 +87,7 @@ func (n NodeMerkle) graficar(i int) string {
 
 		informacion += n.datos + "\\n"
 	} else {
-		informacion += n.HASHDER
+		informacion += n.HASHDER + "\\n"
 		informacion += n.HASHIZQ + "\\n"
 	}
 
@@ -96,13 +96,15 @@ func (n NodeMerkle) graficar(i int) string {
 	return  texto
 }
 
-func (a *Merkle) Graficar() string {
+func (a *Merkle) Graficar(nombre string) string {
 
-	texto := "digraph g{\n    \n\tnode [style=\"filled\" shape=\"rectangle\" fillcolor=\"#ff00005f\"];\n"
+	texto := "digraph g{\n    \n\tnode [style=\"filled\" shape=\"rectangle\" fillcolor=\"#298EB9\"];\n"
 	texto += a.graficar(a.Raiz)
 
 	texto+= "\n}"
 
+	escribirDOT1(texto, "Arbol"+nombre)
+	ejecutarComand1("Arbol"+nombre)
 	return  texto
 }
 
@@ -146,7 +148,7 @@ func ejecutarComand1(nombreArchivo string) {
 	path,_ := exec.LookPath("dot")
 	cmd,_ := exec.Command(path, "-Tsvg", "D:\\Escritorio\\USAC\\EDD\\Proyecto\\Reportes" + "/"+nombreArchivo+".dot").Output()
 	mode := int(0777)
-	ioutil.WriteFile("D:\\Escritorio\\USAC\\EDD\\Proyecto\\Reportes" + "/"+nombreArchivo+".svg", cmd, os.FileMode(mode))
+	ioutil.WriteFile("D:\\Escritorio\\USAC\\EDD\\Proyecto\\Practica 1\\ComponentesAngular\\Proyecto\\src\\assets\\archivosd" + "/"+nombreArchivo+".svg", cmd, os.FileMode(mode))
 
 	fmt.Println("$$$ Reporte Arbol Usuarios png completado")
 }
