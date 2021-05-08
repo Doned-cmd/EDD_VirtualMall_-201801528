@@ -51,7 +51,23 @@ var ArregloCali []ArregloLinea
 
 var ArbolUsuarios *Estructuras.BTree
 
+var UsuariosMerklee *Estructuras.Merkle
+var PedidosMerklee *Estructuras.Merkle
+var TiendasMerklee *Estructuras.Merkle
+var ProductosMerklee *Estructuras.Merkle
+
+var Usuariostran []string
+var Pedidostran []string
+var Tiendastran []string
+var Productostran []string
+
 func main() {
+	Cada5Min()
+	ejecutarorden36()
+
+}
+
+func ejecutarorden36(){
 	ArbolUsuarios = Estructuras.NewBTree(5)
 	UsuarioAdmin := Estructuras.Usuario{
 		Dpi:      1234567890101,
@@ -77,29 +93,98 @@ func main() {
 	//ArbolUsuarios.Insert(Usuario8)
 	//ArbolUsuarios.Insert(Usuario9)
 	//ArbolUsuarios.Insert(Usuario10)
+	var palmerkle []string
+	palmerkle = append(palmerkle, "ho\nla")
+	palmerkle = append(palmerkle, "nofda\nsnko")
+	palmerkle = append(palmerkle, "fdsa\nfdsav ")
+	palmerkle = append(palmerkle, "fdasf\nasdvdsag")
+	palmerkle = append(palmerkle, "qwes\nde")
 
 
+	//print(ArbolMerklee.Graficar())
+
+	//print(int(math.Pow(5,2)))
 	//ArbolUsuarios.Insert(Nuevo4)
 	//ArbolUsuarios.ImprimirArbol()
 	//fmt.Println(ArbolUsuarios.Gragicar())
 	//ArbolUsuarios.Gragicar()
-	//numeros := []int{5}
+	//numeros := []string{"hola"}
 	//numeros = append(numeros, 7)
-    //numeros = append(numeros[:0], numeros[0+1:]...) //cola
+	//numeros = append(numeros[:0], numeros[0+1:]...) //cola
 	//numeros = append(numeros[:len(numeros)-1], numeros[len(numeros)-1+1:]...) //pila
 
+
+
+
+	//print(Regresar(3))
+	//Regresar(&(numeros))
 
 	//fmt.Print(numeros)
 	//numeros = append(numeros, 1)
 	//fmt.Print()
 	request()
 
-
-	//print(Regresar(3))
-	//Regresar(&(numeros))
 	Estructuras.NumeroGrafo = 0
 	ContarMovRobot = -1
+
+
 }
+var bloque *Estructuras.Bloque
+
+func Cada5Min(){
+	 NewTimer(300, func() {
+		fmt.Println("Congratulations! Your 3 second NewTimer() timer finished.\n")
+
+
+		var datos string
+		indicie := obtenerIndice()
+	 	if ProductosMerklee.Raiz != nil{
+		 	datos += ProductosMerklee.Raiz.HASH + "\\n"
+	 	}
+	 	if UsuariosMerklee.Raiz != nil{
+		 	datos += UsuariosMerklee.Raiz.HASH + "\\n"
+	 	}
+	 	if TiendasMerklee.Raiz != nil{
+		 	datos += TiendasMerklee.Raiz.HASH + "\\n"
+	 	}
+	 	if PedidosMerklee.Raiz != nil{
+		 	datos += PedidosMerklee.Raiz.HASH + "\\n"
+	 	}
+	 	previo := ""
+		if bloque.ProviousHash != "" {
+			previo = bloque.ProviousHash
+		}
+
+	 	bloque = Estructuras.NewBloque(indicie,0000,datos,previo,"")
+
+
+	 	PedidosMerklee = Estructuras.NewMerkle(Pedidostran)
+	 	UsuariosMerklee = Estructuras.NewMerkle(Usuariostran)
+	 	TiendasMerklee = Estructuras.NewMerkle(Tiendastran)
+	 	UsuariosMerklee = Estructuras.NewMerkle(Productostran)
+
+		Cada5Min()
+	})
+}
+
+
+func obtenerIndice() int {
+	files,_ := ioutil.ReadDir("../ArchivosBlock/")
+	fmt.Println(len(files))
+	return len(files)
+}
+
+func NewTimer(seconds int, action func()) *time.Timer {
+	timer := time.NewTimer(time.Second * time.Duration(seconds))
+
+	go func() {
+		<-timer.C
+		action()
+	}()
+
+	return timer
+}
+
 
 func Regresar(numeros *[]int)  {
 	*numeros = append(*numeros, 5)
@@ -928,6 +1013,8 @@ func GenerarPedido(rec Estructuras.ProductoAngular){
 		mes = 3
 	}else if today.Month().String() == "April"{
 		mes = 4
+	}else if today.Month().String() == "May"{
+		mes = 5
 	}
 	inven:= Estructuras.Invetarios{
 		Tienda:       rec.Tienda,

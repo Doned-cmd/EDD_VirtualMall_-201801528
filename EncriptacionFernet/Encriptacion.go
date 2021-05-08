@@ -1,6 +1,7 @@
 package EncriptacionFernet
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"github.com/fernet/fernet-go"
 
@@ -19,7 +20,7 @@ func EncriptarString(mensaje string, key string) (string){
 	//decript := fernet.VerifyAndDecrypt(encript,100,)
 	str := string(tok)
 	//fmt.Println(KeyMaster.Encode())
-	fmt.Println(str)
+	//fmt.Println(str)
 	return str
 }
 
@@ -33,4 +34,14 @@ func Desencriptar(token string, key string){
 
 func EncriptarInt(mensaje string){
 
+}
+
+func Encriptar256(texto string) string{
+	sum := sha256.Sum256([]byte(texto))
+	var text []byte
+	for i := 0; i < len(sum); i++ {
+		text = append(text, sum[i])
+
+	}
+	return string(text)
 }
