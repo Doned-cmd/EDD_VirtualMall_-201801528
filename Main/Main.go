@@ -62,7 +62,7 @@ var Tiendastran []string
 var Productostran []string
 
 func main() {
-	Tiempo = 5
+	Tiempo = 300
 	Cada5Min()
 	ejecutarorden36()
 
