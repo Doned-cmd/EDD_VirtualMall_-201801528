@@ -157,7 +157,7 @@ func Cada5Min(){
 		}
 
 	 	bloque = Estructuras.NewBloque(indicie,0000,datos,previo,"")
-		bloque.CrearHash()
+		bloque.GenerarHashBlock()
 	 	bloque.GuardarBloque()
 
 	 	PedidosMerklee = Estructuras.NewMerkle(Pedidostran)

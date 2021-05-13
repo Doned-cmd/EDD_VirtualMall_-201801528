@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-type BlockChain struct {
 
-}
 
 type Bloque struct {
 	Indice int
@@ -22,7 +20,7 @@ type Bloque struct {
 	Hash string
 }
 
-func NewBloque(indice, nonce int,  data, previous, hash string) *Bloque {
+func NewBloque(indice int , nonce int,  data string, previous string, hash string) *Bloque {
 
 	today := time.Now()
 	dia := today.Day()
@@ -52,7 +50,7 @@ func NewBloque(indice, nonce int,  data, previous, hash string) *Bloque {
 	}
 }
 
-func(b *Bloque) CrearHash(){
+func(b *Bloque) GenerarHashBlock(){
 	var texto string
 	var hash string
 	texto = strconv.Itoa(b.Indice) + b.Fecha + b.ProviousHash + b.Data + strconv.Itoa(b.Nonce)
